@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox 
+	
+	width="100%" verticalGap="3"
+	horizontalScrollPolicy="off" 
+	verticalScrollPolicy="off" 
+	xmlns:lti="com.ludens.PackageHandler.view.labeltextinput.*"
+	xmlns:text="com.ludens.components.text.*"
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	
+	clipContent="false" 
+	creationComplete="onCC(event)" 
+	addedToStage="onATS(event)"
+	 
+	implements="com.ludens.PackageHandler.view.itemrenderers.IActiveDragItem"
+	 
+	backgroundColor="0x888888" 
+	backgroundAlpha="0.01" xmlns:controls="com.ludens.components.controls.*" 
+	>
+	
+	<mx:ArrayList id="typeData">
+		<mx:String>slider</mx:String>
+		<mx:String>stepper</mx:String>
+		<mx:String>expression</mx:String>
+		<mx:String>list</mx:String>
+		<mx:String>text</mx:String>
+	</mx:ArrayList>
+	
+	<mx:states>
+		<mx:State name="slider"/>
+		<mx:State name="stepper"/>
+		<mx:State name="expression"/>
+		<mx:State name="list"/>
+		<mx:State name="text"/>
+	</mx:states>
+	
+	<s:Group width="100%">
+		
+		<mx:Button id="btnEditVariable"
+				width="10" height="10"
+				styleName="noStyleButton" 
+				buttonMode="true" useHandCursor="true" mouseChildren="false" 
+				click="editHandler(event)" toggle="true"  
+				selected="{ Variable(data).showSettings }"
+				
+				toolTip="show options"
+				 
+				upSkin="@Embed(source='../../../../../assets/images/arrow_right_light.png')"
+				overSkin="@Embed(source='../../../../../assets/images/arrow_right.png')"
+				downSkin="@Embed(source='../../../../../assets/images/arrow_down.png')"
+				selectedUpSkin="@Embed(source='../../../../../assets/images/arrow_down_light.png')"
+				selectedOverSkin="@Embed(source='../../../../../assets/images/arrow_down.png')"
+				selectedDownSkin="@Embed(source='../../../../../assets/images/arrow_down.png')"  x="0" y="6"/>
+		
+		<lti:LabelTextInput width="100" 
+						id="varName" 
+						text="{Variable(data).name}" 
+						changeValue="nameChangedHandler(event)" 
+						toolTip="{Variable(data).description}"
+						 left="15"/>		
+						
+		<mx:HBox id="metaControls" 
+				 height="100%" 
+				 verticalAlign="middle" 
+				 visible="false" 
+				 includeInLayout="false"
+				  x="100">
+		
+			
+			<mx:Button id="btnDeleteVariable"
+				width="16" height="16" 
+				styleName="noStyleButton" 
+				buttonMode="true" useHandCursor="true" mouseChildren="false" 
+				click="deleteHandler(event)"
+				
+				toolTip="delete variable"
+				
+				upSkin="@Embed(source='../../../../../assets/images/delete_grey.png')"
+				overSkin="@Embed(source='../../../../../assets/images/delete.png')"
+				downSkin="@Embed(source='../../../../../assets/images/delete_dark.png')" />
+				
+		</mx:HBox>
+		
+		<s:Group id="valueControlBox" left="120" right="0">
+					
+			<s:HSlider  	value="{Variable(data).value}" 
+							id="sliderValue" 
+							width="100%" snapInterval="0"
+							y="7"
+							minimum="{Variable(data).min}" maximum="{Variable(data).max}" 
+							visible="{Variable(data).type == 'slider'}"
+							includeInLayout="{Variable(data).type == 'slider'}"
+							liveDragging="true"
+							change="sliderChangeHandler(event)" x="0"/>
+			
+			<controls:DraggableStepper
+							value="{Variable(data).value}" 
+							id="stepperValue" 
+							width="100%" 
+							minimum="{Variable(data).min}" maximum="{Variable(data).max}" 
+							visible="{Variable(data).type == 'stepper'}"
+							includeInLayout="{Variable(data).type == 'stepper'}"
+							change="stepperChangeHandler(event)" height="24"/>
+			
+			<lti:LabelTextInput width="100%" height="24" 
+							id="textValue" color="0xffffff"
+							text="{Variable(data).value}" 
+							changeValue="textChangeHandler(event)"
+							includeInLayout="{Variable(data).type == 'expression' || Variable(data).type == 'text'}"
+							visible="{Variable(data).type == 'expression' || Variable(data).type == 'text'}"
+						/>
+			<lti:LabelTextInput width="100%" height="24" 
+						 id="listValue" color="0xffffff"
+						 text="{Variable(data).value}" 
+						 changeValue="listChangeHandler(event)"
+						 includeInLayout="{Variable(data).type == 'list'}"
+						 visible="{Variable(data).type == 'list'}"
+						 />
+		</s:Group>	
+		
+	</s:Group>
+	
+	<s:Group id="options" width="100%" 
+		
+		includeInLayout="{  Variable(data).showSettings }"
+		visible="{ Variable(data).showSettings }"
+		>
+
+			<s:Label text="type" x="5" y="7" styleName="smallText"/>
+			<s:DropDownList id="typeCB"
+				y="4.5" 
+				dataProvider="{typeData}" 
+				change="{Variable(data).type = typeCB.selectedItem }" 
+				selectedItem="{String(Variable(data).type)}"
+				width="72" x="35"
+				styleName="smallText" height="20.5"/>
+			
+			<s:Label text="value" y="8" x="114" styleName="smallText"/>
+			<lti:LabelTextInput id="valueText" text="{Variable(data).value}" 
+				y="3" height="18"
+				styleName="smallText"
+				
+				changeValue="{ Variable(data).value = valueText.text  }"
+				left="146" right="0"/>
+			<s:Label text="min" y="33" x="4" styleName="smallText"/>
+			<lti:LabelTextInput id="minText" 
+				width="72" y="27" height="18" x="35"
+				text="{String(Variable(data).min)}"
+				changeValue="{Variable(data).min = Number(minText.text) }" 
+				styleName="smallText"/>
+			<s:Label text="max" y="34" x="114" styleName="smallText"/>
+			<lti:LabelTextInput id="maxText" 
+				width="63"  y="28" height="18"
+				text="{String(Variable(data).max)}"
+				changeValue="{Variable(data).max = Number(maxText.text) }"
+				styleName="smallText" left="146"/>
+
+		
+			<s:Label id="descriptionLabel" 
+				text="description" styleName="smallText" y="56"  x="4"/>
+			<text:AutoHeightTextArea id="description"
+				y="53"
+				defaultTextColor="0xbbbbbb" activeTextColor="0xffffff" 
+				styleName="smallText"
+				change="{ Variable(data).description = description.text  }" left="60" right="0"/>
+		
+		
+	</s:Group>
+	
+	<mx:Spacer height="5" includeInLayout="{ Variable(data).showSettings }" />
+	
+	<mx:Script>
+		<![CDATA[
+			import com.ludens.PackageHandler.events.DescriptorEvent;
+			import com.ludens.PackageHandler.events.StateEvent;
+			import com.ludens.magicbox.model.variable.Variable;
+			import com.ludens.utils.BooleanUtil;
+			import com.ludens.utils.Debug;
+			
+			import mx.events.ListEvent;
+			import mx.events.PropertyChangeEvent;
+			import mx.skins.halo.ListDropIndicator;
+
+			private var dataChangedSinceMouseDown:Boolean = false;
+			
+			
+			[Bindable]
+			private var optionsVisible:Boolean = false;
+			
+			
+			public function requestDragClearance( globalMousePos:Point ):Boolean {
+				
+				var localMousePos:Point = globalToLocal( globalMousePos );
+				
+				if( localMousePos.x > valueControlBox.x || 
+					localMousePos.y > valueControlBox.y + valueControlBox.height )
+					return false;
+				else
+					return true;
+			}
+			
+			
+			
+			private function onCC( e:Event ):void {
+							
+				addEventListener( MouseEvent.ROLL_OVER, rollOverHandler );
+				addEventListener( MouseEvent.ROLL_OUT, rollOutHandler );
+			}
+			
+			private function onATS( e:Event ):void {
+				
+				stage.addEventListener( MouseEvent.MOUSE_UP, stageMouseUpHandler );
+			}
+			
+			
+			private function rollOverHandler( e:MouseEvent ):void {
+				metaControls.visible 		 = true;
+				metaControls.includeInLayout = true;
+			}
+			private function rollOutHandler( e:MouseEvent ):void {	
+				metaControls.visible 		 = false;
+				metaControls.includeInLayout = false;
+			}
+			
+			
+			private function stageMouseUpHandler( e:MouseEvent ):void {
+				
+				if( dataChangedSinceMouseDown ) {
+					
+					dataChangedSinceMouseDown = false;
+					doSaveRequest();
+				}
+			}
+			
+			
+			private function doSaveRequest():void {
+				
+				trace( "[VariableEditorRenderer] doSaveRequest" );
+				
+				var event:StateEvent = new StateEvent( StateEvent.REQUEST_SAVE, true );
+				dispatchEvent( event );
+			}
+			
+			
+			
+			
+			private function sliderChangeHandler(e:Event):void {
+				
+				dataChangedSinceMouseDown = true;
+				
+				var _oldValue:Number = data.value;	
+				data.value = sliderValue.value;
+				
+				//var evt:PropertyChangeEvent = PropertyChangeEvent.createUpdateEvent(data, "@value", _oldValue, varValue.value);
+				var evt:ListEvent = new ListEvent(ListEvent.CHANGE, true);
+								
+				dispatchEvent(evt);
+			}
+			
+			private function stepperChangeHandler(e:Event):void {
+				
+				doSaveRequest();
+				
+				var _oldValue:Number = data.value;	
+				data.value = stepperValue.value;
+				
+				//var evt:PropertyChangeEvent = PropertyChangeEvent.createUpdateEvent(data, "@value", _oldValue, varValue.value);
+				var evt:ListEvent = new ListEvent(ListEvent.CHANGE, true);
+				dispatchEvent(evt);
+			}
+			
+			private function textChangeHandler(e:Event):void {
+				
+				//var _oldValue:String = data.@value;	
+				data.value = e.target.text;
+				
+				//var evt:PropertyChangeEvent = PropertyChangeEvent.createUpdateEvent(data, "@value", _oldValue, varValue.value);
+				var evt:ListEvent = new ListEvent(ListEvent.CHANGE, true);
+				
+				dispatchEvent(evt);
+			}
+			
+			
+			
+			private function listChangeHandler(e:Event):void {
+				
+				var _oldValue:String = data.value;	
+				data.value = listValue.text;
+				
+				//var evt:PropertyChangeEvent = PropertyChangeEvent.createUpdateEvent(data, "@value", _oldValue, varValue.value);
+				var evt:ListEvent = new ListEvent(ListEvent.CHANGE, true);
+				
+				dispatchEvent(evt);
+			}
+			
+			
+			
+			private function nameChangedHandler(e:Event):void {
+				
+				data.name = varName.text;
+				
+				//var evt:PropertyChangeEvent = PropertyChangeEvent.createUpdateEvent(data, "@value", _oldValue, varValue.value);
+				var evt:ListEvent = new ListEvent(ListEvent.CHANGE, true);
+				//evt.bubbles = true;
+				dispatchEvent(evt);
+				
+			}
+			
+			
+			private function deleteHandler(e:MouseEvent):void {
+				// fire a delete event
+				
+				doSaveRequest();
+
+				var de:DescriptorEvent = new DescriptorEvent(DescriptorEvent.DELETE, true);
+				
+				de.descriptor = data as XML;
+				dispatchEvent(de);
+			}
+			
+			private function editHandler(e:MouseEvent):void {
+				// fire a delete event
+				
+				/*
+				var de:DescriptorEvent = new DescriptorEvent(DescriptorEvent.EDIT, true);
+				
+				de.descriptor = data as XML;
+				dispatchEvent(de);
+				*/
+				
+				//toggleSettings();
+							
+				data.showSettings = btnEditVariable.selected;
+			}
+
+			
+			
+		]]>
+	</mx:Script>
+</mx:VBox>

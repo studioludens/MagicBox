@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="300" minHeight="300"
+			   creationComplete="application1_creationCompleteHandler(event)" 
+			   xmlns:SVG="com.lorentz.SVG.*" 
+			   xmlns:view="com.ludens.PackageHandler.view.*" width="654" height="446"
+			   backgroundColor="0x333333" borderStyle="solid">
+	
+	<fx:Metadata>
+		[Event(name="change", type="flash.events.Event")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.lorentz.SVG.SVGEvent;
+			import com.lorentz.SVG.SVGLoader;
+			import com.lorentz.SVG.SVGRenderer;
+			import com.ludens.magicbox.model.Template;
+			import com.ludens.PackageHandler.svg.SVGTreeDescriptor;
+			import com.ludens.utils.Debug;
+			import com.ludens.utils.SVGPathUtil;
+			
+			import mx.controls.Alert;
+			import mx.core.IUIComponent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.events.ResizeEvent;
+			
+			[Bindable] public var svgXML:XML;
+			private var svgPreview:SVGRenderer;
+			private var svgLoader:URLLoader;
+			
+			[Bindable] public var previewCode:String;
+			[Bindable] public var previewPathData:String;
+			
+			/**
+			 * selected layer (to import)
+			 */
+			public var selectedLayer:XML;
+			
+			private var svgItemPreview:SVGRenderer;
+			
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				
+				// load the svg
+				//svgLoader = new URLLoader();
+				
+				//svgLoader.addEventListener( Event.COMPLETE, loadCompleteHandler);
+				//svgLoader.load(new URLRequest("assets/xml/test.svg"));
+				
+				
+			}
+			protected function loadCompleteHandler(e:Event):void {
+				
+				
+			}
+			
+			
+			protected function tree1_changeHandler(event:ListEvent):void
+			{
+				
+				// remove previous renderer
+				if( svgItemPreview && sviItem.contains( svgItemPreview ) )
+					sviItem.removeChild( svgItemPreview );
+				
+				// check selected item
+				var selectedItem:XML = XML(svgTree.selectedItem);
+				
+				// expose it to the outside world
+				selectedLayer = selectedItem.copy();
+				
+				var svgData:XML = XML( Template.SVG_HEADER.replace("$width","100").replace("$height","100") + selectedItem.toXMLString() + Template.SVG_FOOTER );
+				svgItemPreview = new SVGRenderer( svgData, true );
+				
+				
+				Debug.print( svgData.toXMLString(), this );
+				
+				previewCode = selectedItem.toXMLString();
+				
+				if( selectedItem.localName() == "path"){
+					previewPathData = SVGPathUtil.prettifyPathData(selectedItem.@d);
+					
+					
+				} else {
+					previewPathData = "";
+				}
+				
+				
+				// and only render that one
+				sviItem.addChild( svgItemPreview );
+				
+				//svgItemPreview.scaleX = svgPreview.scaleX;
+				//svgItemPreview.scaleY = svgPreview.scaleY;
+				
+				
+				// render the rest with low opacity?
+				//scaleToFit(previewBox, svgPreview);
+				scaleToFit(previewItemBox, svgItemPreview);
+			}
+			
+			protected function containerResizeHandler( e:ResizeEvent ):void {
+				//scaleToFit();
+				scaleToFit(previewBox, svgPreview);
+			}
+			
+			/**
+			 * TREE FUNCTIONS
+			 */
+			
+			/**
+			 * icons
+			 */
+			/**
+			 * icons
+			 */
+			[Embed (source="assets/images/vector.png")]
+			[Bindable]
+			public var PathIcon:Class;
+			
+			[Embed (source="assets/images/font.png")]
+			[Bindable]
+			public var TextIcon:Class;
+			
+			[Embed (source="assets/images/application.png")]
+			[Bindable]
+			public var GeneralIcon:Class;
+			
+			[Embed (source="assets/images/shape_square.png")]
+			[Bindable]
+			public var RectIcon:Class;
+			
+			[Embed (source="assets/images/shape_group.png")]
+			[Bindable]
+			public var GroupIcon:Class;
+			
+			
+			private function handleIcon(itemObject:Object):Class
+			{
+				var item:XML = itemObject as XML;
+				var iconClass:Class = GeneralIcon;
+				if(item.localName()=='path'){
+					iconClass = PathIcon;
+				} else if(item.localName() == 'text'){
+					iconClass = TextIcon;
+				} else if(item.localName() == 'g'){
+					iconClass = GroupIcon;
+				} else if(item.localName() == 'rect'){
+					iconClass = RectIcon;
+				} else if(item.localName() == 'circle'){
+					//iconClass = CircleIcon;
+				}
+				return iconClass;
+			}
+			
+			private var _origWidth:Number;
+			private var _origHeight:Number;
+			
+			private function scaleToFit(container:IUIComponent, content:SVGRenderer):void {
+				
+				if( !container || !content) return;
+				
+				// padding around drawing
+				
+				// padding around drawing
+				var scalePadding:Number = 30;
+				
+				
+				// get scale ratio in both directions of SVGPreview compared to width of container
+				var scaleXRatio:Number = (container.width - 2*scalePadding) 	/ (content.width/content.scaleX);
+				var scaleYRatio:Number = (container.height - 2*scalePadding) / (content.height/content.scaleY);
+				
+				// scale ratio minimal is 1, and the minimum of both directions
+				var scaleRatio:Number = Math.min( 1, Math.min( scaleXRatio, scaleYRatio ) );
+				
+				// scale preview with scale ratio
+				content.scaleX = content.scaleY = scaleRatio;
+				
+				
+				var SVGBounds:Rectangle = content.getBounds( this );
+				
+				
+				var outerOffsetX:Number = (width - SVGBounds.width) / 2;
+				var outerOffsetY:Number = (height - SVGBounds.height) / 2;
+				
+				var innerOffsetX:Number = -SVGBounds.x;
+				var innerOffsetY:Number = -SVGBounds.y;
+				
+				//content.x = outerOffsetX + innerOffsetX;
+				//content.y = outerOffsetY + innerOffsetY;		
+				
+				
+			}
+			
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				loadXMLHandler();
+			}
+			
+			/**
+			 * SVG Loading handlers
+			 */
+			
+			public var loadFileRef:FileReference;
+			public var saveFileRef:FileReference;
+			
+			public function loadXMLHandler():void{
+				
+				loadFileRef = new FileReference();
+				
+				// add event listeners for file reference 
+				loadFileRef.addEventListener( Event.SELECT, fileSelectHandler, false, 0, true );
+				loadFileRef.addEventListener( Event.COMPLETE, fileLoadCompleteHandler, false, 0, true );
+				
+				// file filter
+				var filter:FileFilter = new FileFilter( "SVG Files - .svg", "*.svg" );
+				
+				loadFileRef.browse( [ filter ] );
+				
+				/*
+				var loadFile:File = new File();
+				loadFile.browseForOpen("Open Magic Box File",[new FileFilter("Magic Box Templates", "*.mbt")]);
+				loadFile.addEventListener(Event.SELECT, fileOpenLoadXML);
+				*/
+			}
+			
+			
+			private function fileSelectHandler( e:Event ):void {
+				
+				if( !loadFileRef )
+					return;
+				
+				loadFileRef.load();
+			}
+			
+			private function fileLoadCompleteHandler( e:Event ):void {
+				
+				Debug.print("file loaded!", this ) ;
+				
+				
+				var xml:XML = new XML(loadFileRef.data);
+				
+				loadXML(xml);
+				
+			}
+			
+			/**
+			 * this functions loads the XML from a source (can be local or web)
+			 * 
+			 */
+			private function loadXML( xml:XML ):void {
+				
+				// remove previous renderer
+				if( svgPreview && svi.contains( svgPreview ) )
+					svi.removeChild( svgPreview );
+				
+				// remove previous renderer
+				if( svgItemPreview && svi.contains( svgItemPreview ) )
+					sviItem.removeChild( svgItemPreview );
+				
+				// TODO: implement loading
+				Debug.print("loading XML: " + xml);
+				
+				svgXML = xml;
+				try {
+					svgPreview = new SVGRenderer( svgXML , true);
+				} catch(e:Error){
+					Alert.show("The SVG file contains an error so it can't be loaded.","SVG cannot be loaded",Alert.OK, this );
+					return;
+				}
+				
+				
+				svi.addChild( svgPreview );
+				// show the original content with a very low alpha, for reference
+				//svgPreview.alpha = .1;
+				
+				// set original widths and heights
+				_origWidth = svgPreview.width;
+				_origHeight = svgPreview.height;
+				
+				scaleToFit(previewBox, svgPreview);
+				scaleToFit(previewItemBox, svgItemPreview);
+				
+			}
+			
+			private function importHandler():void {
+				// do import stuff here
+				
+				// send event
+				var e:Event = new Event( Event.CHANGE );
+				dispatchEvent(e);
+				
+				// hide display
+				this.visible = false;
+			}
+			
+			private function cancelHandler():void {
+				// do cancel stuff here
+				this.visible = false;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<!-- <fx:XML id="svgXML" source="assets/xml/test.svg"/>-->
+		
+	</fx:Declarations>
+	
+	<s:HGroup top="20" right="20" width="84">
+		<mx:Button 
+			icon="@Embed(source='assets/images/folder.png')" 
+			width="24" height="24" 
+			id="btnLoad" 
+			label="open SVG (.svg)" 
+			labelPlacement="right" 
+			click="{loadXMLHandler()}" 
+			toolTip="open SVG"/>
+		
+		<mx:Button 
+			icon="@Embed(source='assets/images/accept.png')" 
+			width="24" height="24" 
+			id="btnImport" 
+			label="Import Element" 
+			labelPlacement="right" 
+			click="{importHandler()}" 
+			toolTip="Import Element"/>
+		
+		<mx:Button 
+			icon="@Embed(source='assets/images/cancel.png')" 
+			width="24" height="24" 
+			id="btnCancel" 
+			label="Import Element" 
+			labelPlacement="right" 
+			click="{cancelHandler()}" 
+			toolTip="Import Element"/>
+	</s:HGroup>
+	
+	
+	
+	<view:SmartTree
+		id="svgTree"
+		dataProvider="{svgXML.children()}"  
+		dataDescriptor="{new SVGTreeDescriptor}"
+		itemRenderer="com.ludens.PackageHandler.view.itemrenderers.SVGItemRenderer"
+		labelField="@id" 
+		iconFunction="{handleIcon}"
+		indentation="5"
+		top="73" bottom="312" left="20"
+		change="tree1_changeHandler(event)"
+		width="293"
+		 allowMultipleSelection="true"
+		dragMoveEnabled="true" dragEnabled="true" dropEnabled="true"
+		></view:SmartTree>
+	
+	<s:BorderContainer top="73" bottom="20" right="20" left="329"
+					   id="previewBox"  
+					   resize="{containerResizeHandler(event)}">
+		
+		<s:Group>
+			<s:SpriteVisualElement id="svi" y="0" x="0"/>
+		</s:Group>
+		
+		
+	</s:BorderContainer>
+	<s:Label y="55" text="Structure" fontSize="14" left="20"/>
+	<s:Label text="Import SVG" fontSize="25" width="223" height="31" left="20" top="20"/>
+	<s:Label y="55" text="Preview" fontSize="14" left="331" width="72"/>
+	<s:ButtonBar x="28" dataProvider="{vsItem}" bottom="281"/>
+	<mx:ViewStack id="vsItem" width="293" height="244" bottom="20" left="20">
+		<s:NavigatorContent label="Preview" width="100%" height="100%">
+			<s:BorderContainer  x="0" width="100%" height="100%"
+								id="previewItemBox" 
+								resize="{containerResizeHandler(event)}" y="0">
+				
+				
+				<s:Group>
+					<s:SpriteVisualElement id="sviItem" height="100%" y="0" x="0"/>
+				</s:Group>
+				
+			</s:BorderContainer>
+		</s:NavigatorContent>
+		<s:NavigatorContent label="XML" width="100%" height="100%">
+			<s:TextArea width="100%" height="100%" id="previewText" text="{previewCode}" styleName="codeTextStyle"/>
+		</s:NavigatorContent>
+		<s:NavigatorContent label="Path Data" width="100%" height="100%">
+			<view:HighlightTextArea width="100%" height="100%"  id="previewPathDataText" text="{previewPathData}" styleName="codeTextStyle" focusIn="{previewPathDataText.doHighlight()}"/>
+		</s:NavigatorContent>
+	</mx:ViewStack>
+	
+</mx:Canvas>

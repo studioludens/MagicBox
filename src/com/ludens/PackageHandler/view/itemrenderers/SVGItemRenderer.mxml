@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:MXTreeItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					  xmlns:s="library://ns.adobe.com/flex/spark" 
+					  xmlns:mx="library://ns.adobe.com/flex/mx" dataChange="mxtreeitemrenderer1_dataChangeHandler(event)">
+	
+	<s:states>
+		<s:State name="normal" />            
+		<s:State name="hovered" />
+		<s:State name="selected" />
+	</s:states>
+	
+	<s:HGroup left="0" right="0" top="0" bottom="0" verticalAlign="middle">
+		
+		<s:Rect id="indentationSpacer" width="{treeListData.indent}" percentHeight="100" alpha="0">
+			<s:fill>
+				<s:SolidColor color="0xFFFFFF" />
+			</s:fill>
+		</s:Rect>
+		<s:Group id="disclosureGroup">
+			<s:BitmapImage source="{treeListData.disclosureIcon}" visible="{treeListData.hasChildren}" />
+		</s:Group>
+		<s:BitmapImage source="{treeListData.icon}" />
+		<s:Label id="labelField" text="{title}" paddingTop="2" fontWeight="{_isIDTitle ? 'bold' : 'normal' }"/>
+	</s:HGroup>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			/**
+			 * is the title an ID?
+			 */
+			[Bindable]
+			private var _isIDTitle:Boolean = false;
+			
+			private var _title:String;
+			
+			[Bindable]
+			public function get title():String {
+				// check if the object has an id. if not, return a text string describing the object
+				return _title;
+			}
+			
+			public function set title(value:String):void {
+				_title = value;
+			}
+			
+			protected function mxtreeitemrenderer1_dataChangeHandler(event:FlexEvent):void
+			{
+				// set the title of the node
+				title = getTitle( XML(data) );
+				
+			}
+			
+			public function getTitle( node:XML ):String {
+				// let everybody know we changed the data
+				if( node.@id && String(node.@id).length > 0 ){
+					_isIDTitle = true;
+					return node.@id;
+				} else {
+					_isIDTitle = false;
+				}
+				
+				if ( node.localName() == 'text'){
+					// return text content
+					return 'text (' + String(node.text()) + ')';
+				} else if( node.localName() == 'g'){
+					// return group
+					return 'group';
+				} else if( node.localName() == 'rect'){
+					return 'rectangle';
+				} else if( node.localName() == 'circle'){
+					return 'circle';
+				}
+				else {
+					if(node.localName() 
+						&& node.localName().toString().length > 0) return node.localName();
+					else									   return String(node);
+				}						
+			}
+			
+			
+			
+		]]>
+	</fx:Script>
+</s:MXTreeItemRenderer>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layeroptions:LayerOptionsBase xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							   xmlns:s="library://ns.adobe.com/flex/spark" 
+							   xmlns:mx="library://ns.adobe.com/flex/mx" 
+							   xmlns:layeroptions="com.ludens.PackageHandler.view.layeroptions.*" 
+							   height="24"
+							   xmlns:labeltextinput="com.ludens.PackageHandler.view.labeltextinput.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.lorentz.SVG.SVGColor;
+			import com.ludens.magicbox.model.layer.Layer;
+			import com.ludens.utils.BooleanUtil;
+			
+		]]>
+	</fx:Script>
+	
+	<mx:Label x="0" y="0" text="size" width="55" textAlign="right"/>
+	
+	<s:HGroup left="58" right="0">
+		<s:Group width="50%">
+			<mx:Label x="0" y="0" text="w" toolTip="width" id="widthLabel"/>
+			<labeltextinput:LabelTextInput 
+				y="0" 
+				height="20" 
+				fontSize="12"
+				toolTip="width"
+				id="txtWidth"
+				text="{ Layer(data).width }"
+				changeValue="{ data.width = txtWidth.text; doChange() }"  left="15" right="0"/>
+		</s:Group>
+		
+		<s:Group width="50%">
+			<mx:Label x="0" text="h" toolTip="height" id="heightLabel"/>
+			<labeltextinput:LabelTextInput y="0" height="20" fontSize="12" 
+										   id="txtHeight" toolTip="height"
+										   text="{ Layer(data).height }"
+										   changeValue="{ data.height = txtHeight.text; doChange() }"  left="15" right="0"/>
+		</s:Group>
+	</s:HGroup>
+</layeroptions:LayerOptionsBase>

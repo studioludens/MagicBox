@@ -1,0 +1,22 @@
+<text 
+
+	mb_x="0"
+	mb_y="0"
+				
+	mb_fill="#888888"
+	mb_opacity="1"
+	mb_visibility="visible"
+	mb_fontSize="12"
+	mb_fontFamily="Arial"
+	mb_textAnchor="start"
+	
+	mb__showFill="true"
+	mb__showStroke="false"
+	mb__showTransform="false"
+	
+	mb__text="Hello World&#xD;And more"
+	
+	>
+	<transforms></transforms>
+				
+</text>

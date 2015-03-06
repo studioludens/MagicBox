@@ -1,0 +1,26 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+
+@font-face {
+	src: url("../fonts/MyriadWebPro.ttf");
+	fontFamily: "Myriad Pro";
+	fontWeight: "normal";
+	embedAsCFF: false;
+}
+
+@font-face {
+	src: url("../fonts/Arial.ttf");
+	fontFamily: "Arial";
+	fontWeight: "normal";
+	embedAsCFF: false;
+}
+
+
+@font-face {
+	src: url("../fonts/Times New Roman.ttf");
+	fontFamily: "Times New Roman";
+	fontWeight: "normal";
+	embedAsCFF: false;
+}

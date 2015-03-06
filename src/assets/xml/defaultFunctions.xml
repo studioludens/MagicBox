@@ -1,0 +1,584 @@
+<functions>
+
+	
+	<!-- easier names for drawing functions -->
+	<mblFunction name="move" type="builtin" description="relative move to a specific position">
+		<arguments>
+			<argument type="number" name="x" required="true"/>
+			<argument type="number" name="y" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="line" type="builtin" description="relative line to a specific position">
+		<arguments>
+			<argument type="number" name="x" required="true"/>
+			<argument type="number" name="y" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="hline" type="builtin" description="relative horizontal line">
+		<arguments>
+			<argument type="number" name="length" required="true"/>
+		</arguments>
+	</mblFunction>
+
+	<mblFunction name="vline" type="builtin" description="relative horizontal line">
+		<arguments>
+			<argument type="number" name="length" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<!--  TURTLE FUNCTIONS -->
+	
+	<mblFunction name="forward" type="builtin" description="move the turtle forward">
+		<arguments>
+			<argument type="number" name="length" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="fd" type="builtin" description="move the turtle forward (shorthand version)">
+		<arguments>
+			<argument type="number" name="length" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="backward" type="builtin" description="move the turtle backward">
+		<arguments>
+			<argument type="number" name="length" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="left" type="builtin" description="rotate the turtle left">
+		<arguments>
+			<argument type="number" name="angle" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="right" type="builtin" description="rotate the turtle right">
+		<arguments>
+			<argument type="number" name="length" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="goto" type="builtin" description="let the turtle go to a specific position">
+		<arguments>
+			<argument type="number" name="x" required="true"/>
+			<argument type="number" name="y" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="setpos" type="builtin" description="let the turtle go to a specific position">
+		<arguments>
+			<argument type="number" name="x" required="true"/>
+			<argument type="number" name="y" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="setposition" type="builtin" description="let the turtle go to a specific position">
+		<arguments>
+			<argument type="number" name="x" required="true"/>
+			<argument type="number" name="y" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="setx" type="builtin" description="set the x position of the turtle">
+		<arguments>
+			<argument type="number" name="x" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="sety" type="builtin" description="set the y position of the turtle">
+		<arguments>
+			<argument type="number" name="y" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="setheading" type="builtin" description="set the heading of the turtle (in degrees)">
+		<arguments>
+			<argument type="number" name="angle" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="seth" type="builtin" description="set the heading of the turtle (in degrees)">
+		<arguments>
+			<argument type="number" name="angle" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="pendown" type="builtin" description="set the turtle's pen on the paper (draw)">
+		<arguments>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="pd" type="builtin" description="set the turtle's pen on the paper (draw)">
+		<arguments>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="down" type="builtin" description="set the turtle's pen on the paper (draw)">
+		<arguments>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="penup" type="builtin" description="get the turtle's pen off the paper (don't draw)">
+		<arguments>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="pu" type="builtin" description="get the turtle's pen off the paper (don't draw)">
+		<arguments>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="up" type="builtin" description="get the turtle's pen off the paper (don't draw)">
+		<arguments>
+		</arguments>
+	</mblFunction>
+	
+	
+	<!-- polar functions -->
+	<mblFunction name="Mpolar" type="builtin" description="move in the polar coordinate system (absolute)">
+		<arguments>
+			<argument type="number" name="radius" required="true"/>
+			<argument type="number" name="angle" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="Lpolar" type="builtin" description="a line with polar coordinates (absolute)">
+		<arguments>
+			<argument type="number" name="radius" required="true"/>
+			<argument type="number" name="angle" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="mpolar" type="builtin" description="move in the polar coordinate system (relative)">
+		<arguments>
+			<argument type="number" name="radius" required="true"/>
+			<argument type="number" name="angle" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="lpolar" type="builtin" description="a line with polar coordinates (relative)">
+		<arguments>
+			<argument type="number" name="radius" required="true"/>
+			<argument type="number" name="angle" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="NGon" type="mbl" description="a NGon with a number of sides">
+		<arguments>
+			<argument type="number" name="size" required="true"/>
+			<argument type="number" name="sides" required="true"/>
+		</arguments>
+		<code>
+			Mpolar size 0
+			set angle 360/sides
+			repeat sides [
+			  Lpolar size angle*$
+			 ]
+		</code>
+	</mblFunction>
+	
+	<!-- special drawing mblFunctions -->
+	
+	<mblFunction name="h_" type="builtin" description="draws a horizontal dotted line. dashLength is the length of the dashes (default 6) and spaceLength is the length of the space between the dashes.">
+		<arguments>
+			<argument type="number" name="length" required="true"/>
+			<argument type="number" name="dashLength" required="false" default="5"/>
+			<argument type="number" name="spaceLength" required="false" default="5"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="v_" type="builtin" description="draws a vertical dotted line. dashLength is the length of the dashes (default 6) and spaceLength is the length of the space between the dashes.">
+		<arguments>
+			<argument type="number" name="length" required="true"/>
+			<argument type="number" name="dashLength" required="false" default="5"/>
+			<argument type="number" name="spaceLength" required="false" default="5"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="l_" type="builtin" description="draws a horizontal dotted line. dashLength is the length of the dashes (default 6) and spaceLength is the length of the space between the dashes.">
+		<arguments>
+			<argument type="number" name="width" required="true"/>
+			<argument type="number" name="height" required="true"/>
+			<argument type="number" name="dashLength" required="false" default="5"/>
+			<argument type="number" name="spaceLength" required="false" default="5"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="rc" type="builtin" description="draws a rounded corner. horOrientation can be LEFT or RIGHT, verOrientation can be TOP or BOTTOM.">
+		<arguments>
+			<argument type="number" name="radius" required="true"/>
+			<argument type="number" name="horOrientation" required="false" default="1"/>
+			<argument type="number" name="verOrientation" required="false" default="1"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="circle" type="builtin" description="draws a circle. position can be CENTER or CORNER">
+		<arguments>
+			<argument type="number" name="radius" required="true"/>
+			<argument type="number" name="position" required="false" default="1"/>
+			<argument type="boolean" name="direction" required="false" default="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="rect" type="builtin" description="draws a rectangle. position can be CENTER or CORNER">
+		<arguments>
+			<argument type="number" name="width" required="true"/>
+			<argument type="number" name="height" required="true"/>
+			<argument type="number" name="position" required="false" default="0"/>
+			<argument type="boolean" name="direction" required="false" default="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="cross" type="builtin" description="draws a cross with a certain size and angle.">
+		<arguments>
+			<argument type="number" name="size" required="true"/>
+			<argument type="number" name="angle" required="false" default="0"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="square" type="mbl" description="draws a square">
+		<arguments>
+			<argument type="number" name="size" required="true"/>
+		</arguments>
+		<code>
+			h size v size h -size v -size
+		</code>
+	</mblFunction>
+	
+	<mblFunction name="ellipse" type="mbl" description="draw an ellipse. position can be CENTER or CORNER">
+		<arguments>
+			<argument type="number" name="width" required="true"/>
+			<argument type="number" name="height" required="true"/>
+			<argument type="number" name="position" required="false" default="1"/>
+		</arguments>
+		<code>
+			m width/2 0
+			a width/2 height/2 0 0 1 width/2 height/2
+			a width/2 height/2 0 0 1 -width/2 height/2
+			a width/2 height/2 0 0 1 -width/2 -height/2
+			a width/2 height/2 0 0 1 width/2 -height/2
+		</code>
+	</mblFunction>
+	
+	<mblFunction name="supershape" type="builtin" description="draw a supershape. ">
+		<arguments>
+			<argument type="number" name="m" required="true"/>
+			<argument type="number" name="n1" required="true"/>
+			<argument type="number" name="n2" required="true"/>
+			<argument type="number" name="n3" required="true"/>
+			<argument type="number" name="a" required="false" default="1"/>
+			<argument type="number" name="b" required="false" default="1"/>
+			<argument type="number" name="points" required="false" default="200"/>
+		</arguments>
+	</mblFunction>
+	
+	<!-- mathematical functions -->
+	
+	<mblFunction name="sin" type="builtin" description="sine of the number">
+		<arguments>
+			<argument type="number" name="value" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="cos" type="builtin" description="cosine of the number">
+		<arguments>
+			<argument type="number" name="value" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="tan" type="builtin" description="tangens of the number">
+		<arguments>
+			<argument type="number" name="value" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="asin" type="builtin" description="arc sine of the number">
+		<arguments>
+			<argument type="number" name="value" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="acos" type="builtin" description="arc cosine of the number">
+		<arguments>
+			<argument type="number" name="value" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="atan" type="builtin" description="arc tangens of the number">
+		<arguments>
+			<argument type="number" name="value" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="pow" type="builtin" description="value1 ^ value2">
+		<arguments>
+			<argument type="number" name="value1" required="true"/>
+			<argument type="number" name="value2" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="atan2" type="builtin" description="the angle this point makes relative to the origin">
+		<arguments>
+			<argument type="number" name="value1" required="true"/>
+			<argument type="number" name="value2" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="log" type="builtin" description="logarithm of the number">
+		<arguments>
+			<argument type="number" name="value" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="sqrt" type="builtin" description="square root of the number">
+		<arguments>
+			<argument type="number" name="value" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="abs" type="builtin" description="absolute value of the number">
+		<arguments>
+			<argument type="number" name="value1" required="true"/>
+			<argument type="number" name="value2" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="min" type="builtin" description="minimum of two numbers">
+		<arguments>
+			<argument type="number" name="value1" required="true"/>
+			<argument type="number" name="value2" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="max" type="builtin" description="maximum of two numbers">
+		<arguments>
+			<argument type="number" name="value1" required="true"/>
+			<argument type="number" name="value2" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="integer" type="builtin" description="convert a number to a whole number">
+		<arguments>
+			<argument type="number" name="value" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="even" type="builtin" description="is a number even?">
+		<arguments>
+			<argument type="number" name="value" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="odd" type="builtin" description="is a number odd">
+		<arguments>
+			<argument type="number" name="value" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="print" type="builtin" description="prints a variable to the command line">
+		<arguments>
+			<argument type="dynamic" name="variable" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<!-- isometric functions -->
+	<mblFunction name="moveiso" type="builtin" description="move to a point in isometric projection">
+		<arguments>
+			<argument type="number" name="x" required="true"/>
+			<argument type="number" name="y" required="true"/>
+			<argument type="number" name="z" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="Miso" type="builtin" description="absolute move to a point in isometric projection">
+		<arguments>
+			<argument type="number" name="x" required="true"/>
+			<argument type="number" name="y" required="true"/>
+			<argument type="number" name="z" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="miso" type="builtin" description="move to a point in isometric projection">
+		<arguments>
+			<argument type="number" name="x" required="true"/>
+			<argument type="number" name="y" required="true"/>
+			<argument type="number" name="z" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="lineiso" type="builtin" description="draw a line to a point in isometric projection">
+		<arguments>
+			<argument type="number" name="x" required="true"/>
+			<argument type="number" name="y" required="true"/>
+			<argument type="number" name="z" required="true"/>
+			<argument type="boolean" name="absolute" required="false" default="false"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="liso" type="builtin" description="draw a line to a point in isometric projection">
+		<arguments>
+			<argument type="number" name="x" required="true"/>
+			<argument type="number" name="y" required="true"/>
+			<argument type="number" name="z" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="lineiso_" type="builtin" description="draw a dotted line to a point in isometric projection">
+		<arguments>
+			<argument type="number" name="x" required="true"/>
+			<argument type="number" name="y" required="true"/>
+			<argument type="number" name="z" required="true"/>
+			<argument type="number" name="dashLength" required="false" default="5"/>
+			<argument type="number" name="spaceLength" required="false" default="5"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="lisox" type="builtin" description="draw a line on the x axis in isometric projection">
+		<arguments>
+			<argument type="number" name="x" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="lisoy" type="builtin" description="draw a line on the y axis in isometric projection">
+		<arguments>
+			<argument type="number" name="y" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="lisoz" type="builtin" description="draw a line on the z axis in isometric projection">
+		<arguments>
+			<argument type="number" name="z" required="true"/>
+		</arguments>
+	</mblFunction>
+
+	
+	<mblFunction name="rectiso" type="builtin" description="draw a rectangle in isometric projection">
+		<arguments>
+			<argument type="number" name="width" required="true"/>
+			<argument type="number" name="height" required="true"/>
+			<argument type="number" name="orientation" required="false" default="0"/>
+			<argument type="boolean" name="cutout" required="false" default="false"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="boxiso" type="builtin" description="draw a semi-3D box in isometric projection">
+		<arguments>
+			<argument type="number" name="width" required="true"/>
+			<argument type="number" name="depth" required="true"/>
+			<argument type="number" name="height" required="true"/>
+			<argument type="number" name="type" required="false" default="0"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="polyiso" type="builtin" description="draw a polygon in isometric projection. Needs a list with x,y,z coordinates">
+		<arguments>
+			<argument type="list" name="points" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="polyiso2d" type="builtin" description="draw a polygon in isometric projection. Needs a list with x,y coordinates, an orientation and a position relative to the axis">
+		<arguments>
+			<argument type="list" name="points" required="true"/>
+			<argument type="number" name="orientation" required="false" default="0"/>
+			<argument type="number" name="position" required="false" default="0"/>
+		</arguments>
+	</mblFunction>
+	
+	<mblFunction name="poly" type="builtin" description="draw a polygon. Needs a list with x,y coordinates">
+		<arguments>
+			<argument type="list" name="points" required="true"/>
+		</arguments>
+	</mblFunction>
+	
+	<!-- Pressfit Functions -->
+	
+	
+	<!-- Tal Pressfit Functions -->
+	<mblFunction name="tal_pf_h" type="mbl" description="tal's horizontal pressfit">
+		<arguments>
+			<argument type="number" name="width" required="true"/>
+			<argument type="number" name="thickness" required="true"/>
+			<argument type="number" name="pf" required="true"/>
+			<argument type="number" name="direction" required="true"/>
+			
+			<argument type="number" name="small" required="false" default="-1"/>
+			<argument type="number" name="out" required="false" default="1"/>
+			
+			<argument type="number" name="pf_middle" required="false" default="15"/>
+			<argument type="number" name="pf_bottom" required="false" default="30"/>
+			<argument type="number" name="pf_top" required="false" default="40"/>
+		</arguments>
+		<code>
+			set dir 1
+			if (width&lt;0) [ set dir -1 ]
+			
+			set pf_unit pf_middle+pf_bottom*2+pf_top
+			set max_steps (int(width/pf_unit))
+			set remainder (abs(width)-abs(pf_unit*max_steps))
+			
+			
+			if (small &lt;= 0) [ h dir*thickness ]
+			h dir*remainder/2
+			repeat max_steps*dir [
+			 h (dir*(pf_top/2+pf/2*out))
+			 v direction*thickness
+			 h (dir*(pf_bottom-pf*out))
+			 v -direction*thickness
+			 h (dir*(pf_middle+pf*out))
+			 v direction*thickness
+			 h (dir*(pf_bottom-pf*out))
+			 v -direction*thickness
+			 h (dir*(pf_top/2+pf/2*out))
+			]
+			h dir*remainder/2
+			if (small &lt;= 0) [ h dir*thickness ]
+		</code>
+	</mblFunction>
+	
+	
+	
+	<mblFunction name="tal_pf_v" type="mbl" description="tal's vertical pressfit">
+		<arguments>
+			<argument type="number" name="height" required="true"/>
+			<argument type="number" name="thickness" required="true"/>
+			<argument type="number" name="pf" required="true"/>
+			<argument type="number" name="direction" required="true"/>
+			
+			<argument type="number" name="small" required="false" default="-1"/>
+			<argument type="number" name="out" required="false" default="1"/>
+			
+			<argument type="number" name="pf_middle" required="false" default="15"/>
+			<argument type="number" name="pf_bottom" required="false" default="30"/>
+			<argument type="number" name="pf_top" required="false" default="40"/>
+		</arguments>
+		<code>
+			set dir 1
+			if (height&lt;0) [ set dir -1 ]
+			
+			set pf_unit pf_middle+pf_bottom*2+pf_top
+			set max_steps (int(height/pf_unit))
+			set remainder (abs(height)-abs(pf_unit*max_steps))
+			
+			
+			if (small &lt;= 0) [ v dir*thickness ]
+			v dir*remainder/2
+			repeat max_steps*dir [
+			 v (dir*(pf_top/2+pf/2*out))
+			 h direction*thickness
+			 v (dir*(pf_bottom-pf*out))
+			 h -direction*thickness
+			 v (dir*(pf_middle+pf*out))
+			 h direction*thickness
+			 v (dir*(pf_bottom-pf*out))
+			 h -direction*thickness
+			 v (dir*(pf_top/2+pf/2*out))
+			]
+			if (small &lt;= 0) [ v dir*thickness ]
+			v dir*remainder/2
+		</code>
+	</mblFunction>
+	
+			
+</functions>

@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				xmlns:labeltextinput="com.ludens.PackageHandler.view.labeltextinput.*"
+				horizontalScrollPolicy="off"
+				verticalScrollPolicy="off"
+				creationComplete="canvas1_creationCompleteHandler(event)"
+				width="100%"
+				width.translate="512"
+				currentState="{String(LayerTransform(data).type)}">
+	<mx:states>
+		<s:State name="translate"/>
+		<s:State name="rotate"/>
+		<s:State name="scale"/>
+		<s:State name="matrix"/>
+		<s:State name="skewx"/>
+		<s:State name="skewy"/>
+	</mx:states>
+	
+	
+	<fx:Declarations>
+		
+		<fx:Array id="typeData">
+			<fx:String>translate</fx:String>
+			<fx:String>rotate</fx:String>
+			<fx:String>scale</fx:String>
+			<fx:String>matrix</fx:String>
+			<fx:String>skewx</fx:String>
+			<fx:String>skewy</fx:String>
+		</fx:Array>
+		<s:ArrayCollection id="typeDataArray" source="{typeData}"/>
+	</fx:Declarations>
+	
+	
+	<s:ComboBox id="typeCB"
+				 y="1" x="0"
+				 dataProvider="{typeDataArray}" 
+				 selectedItem="{LayerTransform(data).type}"
+				 change="{data.type = typeCB.selectedItem; updateState();}" width="77"
+				 styleName="smallText" height="20">
+	</s:ComboBox>
+	<!-- translation -->
+	<s:HGroup left="88" right="0" includeIn="translate">
+		
+		<s:Group width="50%">
+			<s:Label x="0" y="4" text="x" />
+			<labeltextinput:LabelTextInput 
+				id="xText"
+				text="{LayerTransform(data).x}"
+				y="0"
+				changeValue="{data.x = xText.text; changeHandler(event)}" fontSize="12" right="0" left="10"/>
+		</s:Group>
+		
+		<s:Group width="50%">
+			<s:Label x="0" y="4" text="y"  />
+			<labeltextinput:LabelTextInput 
+				y="0"
+				id="yText"
+				text="{LayerTransform(data).y}"
+				changeValue="{data.y = yText.text; changeHandler(event)}" fontSize="12" right="0" left="10"/>
+			
+		</s:Group>
+	</s:HGroup>
+	
+	<!-- rotation -->
+		
+	<s:HGroup includeIn="rotate" left="88" right="0" >
+		<s:Group width="33%">
+			<s:Label x="0" y="3" text="a"/>
+			<labeltextinput:LabelTextInput 
+				id="angle"
+				text="{LayerTransform(data).angle}"
+				y="0"
+				changeValue="{data.angle = angle.text; changeHandler(event)}" fontSize="12" left="10" right="0"/>
+			
+		</s:Group>
+		<s:Group width="33%">
+			<s:Label x="0" y="3" text="cx"/>
+			<labeltextinput:LabelTextInput 
+				id="cxText"
+				text="{LayerTransform(data).cx}"
+				y="0"
+				changeValue="{data.cx = cxText.text; changeHandler(event)}" fontSize="12" left="15" right="0"/>
+			
+		</s:Group>
+		<s:Group width="33%">
+			<s:Label x="0" y="3" text="cy"/>
+			
+			<labeltextinput:LabelTextInput 
+				y="0"
+				id="cyText"
+				text="{LayerTransform(data).cy}"
+				changeValue="{data.cy = cyText.text; changeHandler(event)}" fontSize="12" left="15" right="0"/>
+		</s:Group>
+	</s:HGroup>
+	
+	<!-- scaling -->
+	<s:HGroup includeIn="scale" left="88" right="0">
+		<s:Group width="50%">
+			<s:Label x="0" y="5" text="x"/>
+			<labeltextinput:LabelTextInput 
+				id="xScaleText"
+				text="{LayerTransform(data).sx}"
+				y="0"
+				changeValue="{data.sx = xScaleText.text; changeHandler(event)}" fontSize="12" left="10" right="0"/>
+		</s:Group>
+		<s:Group width="50%">
+			<s:Label x="0" y="4" text="y"/>
+			<labeltextinput:LabelTextInput 
+				y="0"
+				id="yScaleText"
+				text="{LayerTransform(data).sy}"
+				changeValue="{data.sy = yScaleText.text; changeHandler(event)}" fontSize="12" left="10" right="0"/>
+		</s:Group>
+	</s:HGroup>
+		
+	<s:HGroup id="metaControls" height="100%" paddingRight="5" verticalAlign="middle" visible="false" includeInLayout="false" right="0">
+		<mx:Button id="btnDeleteVariable"
+				   width="16" height="16" 
+				   styleName="noStyleButton" 
+				   buttonMode="true" useHandCursor="true" mouseChildren="false" 
+				   click="deleteHandler(event)"
+				   
+				   toolTip="delete transformation"
+				   
+				   upSkin="@Embed(source='../../../../../assets/images/delete_grey.png')"
+				   overSkin="@Embed(source='../../../../../assets/images/delete.png')"
+				   downSkin="@Embed(source='../../../../../assets/images/delete_dark.png')" />
+	</s:HGroup>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.PackageHandler.events.DescriptorEvent;
+			import com.ludens.PackageHandler.events.StateEvent;
+			import com.ludens.magicbox.model.layer.transform.LayerTransform;
+			import com.ludens.utils.Debug;
+			
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			
+			public function changeHandler(e:Event):void {
+				
+				
+				var evt:ListEvent = new ListEvent(ListEvent.CHANGE, true);
+				
+				dispatchEvent(evt);
+				
+				
+			}
+			
+			protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+			{
+				addEventListener( MouseEvent.ROLL_OVER, rollOverHandler );
+				addEventListener( MouseEvent.ROLL_OUT, rollOutHandler );
+			}
+			
+			private function rollOverHandler( e:MouseEvent ):void {
+				metaControls.visible 		 = true;
+				metaControls.includeInLayout = true;
+			}
+			private function rollOutHandler( e:MouseEvent ):void {	
+				metaControls.visible 		 = false;
+				metaControls.includeInLayout = false;
+			}
+			
+			
+			public function updateState():void {
+				// change state based on the value of the combo box
+				
+				Debug.print("Updating transformation: " + String(typeCB.selectedItem), this);
+				
+				currentState = typeCB.selectedItem;
+				
+			}
+			
+			private function deleteHandler(e:MouseEvent):void {
+				// fire a delete event
+				
+				doSaveRequest();
+				
+				var de:DescriptorEvent = new DescriptorEvent(DescriptorEvent.DELETE, true);
+				
+				de.descriptor = data as XML;
+				dispatchEvent(de);
+			}
+			
+			private function doSaveRequest():void {
+				
+				trace( "[VariableEditorRenderer] doSaveRequest" );
+				
+				var event:StateEvent = new StateEvent( StateEvent.REQUEST_SAVE, true );
+				dispatchEvent( event );
+			}
+			
+			private function showTransformations():void {
+				// show the transformation list
+				data.showTransform = true;
+				doChange();
+			}
+			
+			public function doChange():void {
+				
+				// check if data properties are selected
+				
+				
+				//dataChangedSinceMouseDown = true;
+				
+				
+				// fire a change event
+				var evt:Event = new Event(Event.CHANGE);
+				dispatchEvent(evt);		
+			}
+			
+			
+
+			
+
+		]]>
+	</fx:Script>
+	
+	
+</mx:Canvas>

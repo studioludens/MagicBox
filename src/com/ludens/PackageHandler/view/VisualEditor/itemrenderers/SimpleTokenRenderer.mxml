@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="true" xmlns:tokens="com.ludens.magicbox.parser.tokens.*">
+	
+	<fx:Declarations>
+		<!--
+		<tokens:AssignmentToken id="assignmentToken"/>
+		<tokens:BooleanToken id="booleanToken"/>
+		<tokens:DrawingToken id="sdrawingToken"/>
+		<tokens:EachToken id="eachToken"/>
+		<tokens:ExpressionToken id="expressionToken"/>
+		<tokens:FunctionToken id="functionToken"/>
+		<tokens:GroupToken id="groupToken"/>
+		<tokens:IfToken id="ifToken"/>
+		<tokens:ListItemToken id="listItemToken"/>
+		<tokens:ListToken id="listToken"/>
+		<tokens:ListVariableToken id="listvariableToken"/>
+		<tokens:RepeatToken id="repeatToken"/>
+		<tokens:TextToken id="textToken"/>
+		<tokens:ValueToken id="valueToken"/>
+		<tokens:VariableToken id="variableToken"/>
+		-->
+		
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.magicbox.parser.tokens.*;
+			import com.ludens.utils.Debug;
+			
+			private var _token:IToken;
+
+			[Bindable]
+			public function get token():IToken
+			{
+				return _token;
+			}
+
+			public function set token(value:IToken):void
+			{
+				if( _token != value ){
+					_token = value;
+					// change the token renderer
+					
+				}
+				
+			}
+			
+			[Bindable]
+			override public function get data():Object
+			{
+				// TODO Auto Generated method stub
+				return super.data;
+			}
+			
+			override public function set data(value:Object):void
+			{
+				if( super.data != value ){
+					
+					// TODO Auto Generated method stub
+					super.data = value;
+					
+					token = IToken( data );
+					
+					// check what token it is. show the appropriate view
+					if( 	   token is AssignmentToken ){
+						
+						
+						
+					} else if( token is BooleanToken ){
+						
+						Debug.print("Token not recognized: " + token.toString(), this );
+						
+					} else if( token is DrawingToken ){
+						
+					} else if( token is EachToken ){
+						
+					} else if( token is ExpressionToken ){
+						
+					} else if( token is FunctionToken ){
+						
+					} else if( token is GroupToken ){
+						
+					} else if( token is IfToken ){
+						
+					} else if( token is ListItemToken ){
+						
+					} else if( token is ListToken ){
+						
+					} else if( token is ListVariableToken ){
+						
+					} else if( token is RepeatToken ){
+						
+					} else if( token is TextToken ){
+						
+					} else if( token is ValueToken ){
+						
+					} else if( token is VariableToken ){
+						
+					} else {
+						
+					}
+					
+				}
+				
+			}
+			
+			
+			
+			
+		]]>
+	</fx:Script>
+	<s:Label text="{data}"/>
+	
+</s:ItemRenderer>

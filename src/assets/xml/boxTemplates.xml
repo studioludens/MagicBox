@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<templates>
+
+	<template id="1" name="Simple Box" src="simple.mbt"></template>
+	<template id="2" name="Huisje" src="huisje.mbt"></template>
+</templates>

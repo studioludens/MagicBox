@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			    creationComplete="application1_creationCompleteHandler(event)" height="372" width="739" xmlns:debugger="com.demonsters.debugger.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		
+	</fx:Declarations>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.magicbox.parser.*;
+			import com.ludens.magicbox.parser.expressions.IntegerExpression;
+			import com.ludens.magicbox.parser.tokens.*;
+			
+			import mx.events.FlexEvent;
+			
+			import r1.deval.D;
+
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				
+				//testTokens();
+				//testParser();
+				testVariableName();
+				//testEval();
+				
+			}
+			
+			
+			/** 
+			 * testing different Tokens
+			 * 
+			 */
+			public function testTokens():void {
+				
+				
+				var pc:ParserContext = new ParserContext();
+				
+				pc["width"] = 33;
+				var val:ValueToken = new ValueToken( "100" );
+				
+				var val100:ValueToken = new ValueToken( "100" );
+				var val200:ValueToken = new ValueToken( "200" );
+				var val300:ValueToken = new ValueToken( "300" );
+				
+				var variableWidth:VariableToken = new VariableToken( "width" );
+				var variableHeight:VariableToken = new VariableToken( "height" );
+				var variableIterator:VariableToken = new VariableToken( "#" );
+				var et:ExpressionToken = new ExpressionToken("width*height/7");
+				
+				var lt:DrawingToken = new DrawingToken( "h", new Array( variableIterator ) );
+				
+				var it:RepeatToken = new RepeatToken( new IntegerExpression( "2+2" ), lt );
+				var at:AssignmentToken = new AssignmentToken( "height", new ValueToken("30"));
+				
+				var hor:DrawingToken = new DrawingToken("h", new Array(variableWidth) );
+				var ver:DrawingToken = new DrawingToken("v", new Array(variableHeight) );
+				var f:FunctionToken = new FunctionToken(
+					"sin", 
+					FunctionToken.FUNCTION_TYPE_BUILTIN, 
+					new Array(val100),
+					new Array("number"));
+				
+				
+				var group:GroupToken = new GroupToken( new Array( at, et, hor, ver, it, f ) );
+				
+				
+				//trace("D.eval: " + D.eval("width",{"width":10}));
+				
+				trace(group.parse( pc ));
+			}
+			
+			public function testParser():void {
+				var text:String = txtSource.text;
+				
+				// create a new parser object
+				var parser:LanguageParser = new LanguageParser();
+				
+				var startTime:Date = new Date;
+				// feed it with a test string
+				var resultToken:IToken = parser.tokenize( text );
+				
+				var endTime:Date = new Date;
+				trace("Tokenize took: " + (endTime.time - startTime.time) + "ms");
+				
+				
+				
+				var pc:ParserContext = new ParserContext();
+				
+				pc["testlist"] = parser.tokenizeList("{{0,0},{100,0},{40,50}}");
+				
+				
+				startTime = new Date;
+				txtResult.text = resultToken.parseToString( pc );
+				endTime = new Date;
+				
+				trace("Parsing  took: " + (endTime.time - startTime.time) + "ms");
+				
+			}
+			
+			/**
+			 * test if the variable name match works properly
+			 */
+			public function testVariableName():void {
+				
+				// create a new parser object
+				var parser:LanguageParser = new LanguageParser();
+				
+				md.trace( testVariableName, parser );
+				trace("is variable: width - " + parser.isVariable( "width"));
+				trace("is variable: -width - " + parser.isVariable( "-width"));
+				trace("is variable: wid-th - " + parser.isVariable( "wid-th"));
+				trace("is variable: wid/th - " + parser.isVariable( "wid/th"));
+				trace("is variable: width01 - " + parser.isVariable( "width01"));
+				trace("is variable: 01width - " + parser.isVariable( "01width"));
+				trace("is variable: wid_th - " + parser.isVariable( "wid_th"));
+				trace("is variable: i - " + parser.isVariable( "i"));
+			}
+			
+			public function testEval():void {
+				
+				var context:ParserContext = new ParserContext();
+				context["_"] = 10;
+				context["@"] = 10;
+				//trace("Testing D.eval on '_' " + D.eval("_", context));
+				//trace("Testing D.eval on '@' " + D.eval("@", context));
+				//trace("Testing D.eval on '$' " + D.eval("$", context));
+				//trace("Testing D.eval on '#' " + D.eval("#", context));
+				
+			}
+			
+			public function testRegEx():void{
+				var regEx:RegExp = /\b(\w*)\.([0-9]+)\b/g;
+				
+			}
+
+
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				testParser();
+			}
+
+		]]>
+	</fx:Script>
+	
+	<debugger:MonsterDebuggerFlex id="md" width="300" height="300"/>
+	
+	<s:TextArea id="txtSource" left="9" top="66" bottom="43" right="391"/>
+	<s:TextArea id="txtResult" left="390" top="66" bottom="43" right="10"/>
+	<s:Button label="Evaluate" click="button1_clickHandler(event)" bottom="14" left="278"/>
+	<s:Label x="10" y="24" text="Magic Box Language Test Suite" fontSize="24"/>
+</s:Application>

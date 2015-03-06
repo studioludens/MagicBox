@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<actionScriptProperties analytics="false" mainApplicationPath="MagicBox.mxml" projectUUID="599a7ad3-588a-4eed-889c-d05f6b70884b" version="10">
+  <compiler additionalCompilerArguments="-locale en_US" autoRSLOrdering="false" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="11.1.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
+    <compilerSourcePath>
+      <compilerSourcePathEntry kind="1" linkType="1" path="${DOCUMENTS}/ZoomPanTest/src"/>
+    </compilerSourcePath>
+    <libraryPath defaultLinkType="0">
+      <libraryPathEntry kind="1" linkType="1" path="libs"/>
+      <libraryPathEntry kind="1" linkType="1" path="libs/deval-1.1-b080804"/>
+      <libraryPathEntry kind="3" linkType="1" path="libs/xml-validator/XMLValidator.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="4" path="">
+        <excludedEntries>
+          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/core.swc" useDefaultLinkType="false"/>
+        </excludedEntries>
+      </libraryPathEntry>
+      <libraryPathEntry kind="1" linkType="1" path="${DCD_LIB_LOCATION}"/>
+      <libraryPathEntry kind="1" linkType="1" path="${DCD_LOCALE_LOCATION}"/>
+      <libraryPathEntry kind="3" linkType="1" path="${DCD_FIBER_LOCATION}/fiber.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="${DCD_FIBER_LOCALE_LOCATION}/fiber_rb.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="${DCD_FIBER_LOCATION}/playerfds.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="libs/MonsterDebugger.swc" useDefaultLinkType="false"/>
+    </libraryPath>
+    <sourceAttachmentPath/>
+  </compiler>
+  <applications>
+    <application path="tests/NavigationContainerTest.mxml"/>
+    <application path="tests/LabelTextInputTest.mxml"/>
+    <application path="tests/GeneralTest.mxml"/>
+    <application path="MBView.mxml"/>
+    <application path="MagicBoxLudens.mxml"/>
+    <application path="tests/LayerTest.mxml"/>
+    <application path="tests/ParserTest.mxml"/>
+    <application path="tests/ImportSVGTest.mxml"/>
+    <application path="tests/BooleanLayerTest.mxml"/>
+    <application path="tests/ModelTest.mxml"/>
+    <application path="tests/EditorViewTest.mxml"/>
+    <application path="tests/HelpTest.mxml"/>
+    <application path="MagicBox.mxml"/>
+    <application path="tests/ServerConnectTest.mxml"/>
+    <application path="tests/DrawingCommandsTest.mxml"/>
+    <application path="tests/RendererTest.mxml"/>
+  </applications>
+  <modules/>
+  <buildCSSFiles/>
+  <flashCatalyst validateFlashCatalystCompatibility="false"/>
+</actionScriptProperties>

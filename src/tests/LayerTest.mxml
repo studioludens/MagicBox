@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			   creationComplete="application1_creationCompleteHandler(event)">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.controllers.ParserController;
+			import com.ludens.magicbox.model.LayerAttribute;
+			import com.ludens.magicbox.model.LayerFactory;
+			import com.ludens.magicbox.model.layer.PathLayer;
+			import com.ludens.magicbox.parser.ParserContext;
+			import com.ludens.magicbox.parser.tokens.IToken;
+			import com.ludens.utils.Debug;
+			
+			import mx.events.FlexEvent;
+			
+			public function testLayer():void {
+				
+				var l1:PathLayer = LayerFactory.createFromType("path") as PathLayer;
+				
+				var pc:ParserController = ParserController.getInstance();
+				
+				// add variables to context
+				pc.setContextVariable( "height", 100 );
+				pc.setContextVariable( "width", 10 );
+				
+				
+				Debug.print("-- SETTING INITIAL VALUES --");
+				Debug.print("l1     = " + l1.toString(), this);
+				Debug.print("l1.svg = " + l1.getSVG().toXMLString(), this);
+				//l1.getSVG();
+				/*
+				// changing context
+				pc.setContextVariable( "height", 88 );
+				pc.setContextVariable( "width", 99 );
+				
+				Debug.print("-- CHANGING CONTEXT --");
+				Debug.print("l1.svg = " + l1.getSVG().toXMLString(), this);
+				
+				Debug.print("-- UPDATE CHECK --");
+				Debug.print("l1.svg = " + l1.getSVG().toXMLString(), this);
+				
+				// change data
+				l1.d = "h width/2";
+				Debug.print("-- CHANGING DATA CHECK --");
+				Debug.print("l1     = " + l1.toString(), this);
+				Debug.print("l1.svg = " + l1.getSVG().toXMLString(), this);
+				*/
+				
+				
+			}
+			
+			public function testAttributeExpressions():Boolean {
+				
+				trace("Testing attributes");
+				
+				
+				// PARSING EXPRESSIONS TEST
+				var a1:LayerAttribute = new LayerAttribute("mb_x", "100");
+				var a2:LayerAttribute = new LayerAttribute("mb_y", "height");
+				var a3:LayerAttribute = new LayerAttribute("mb_z", "width+100");
+				var a4:LayerAttribute = new LayerAttribute("mb_a", "");
+				
+				a1.parseType = LayerAttribute.PARSE_AS_EXPRESSION;
+				a2.parseType = LayerAttribute.PARSE_AS_EXPRESSION;
+				a3.parseType = LayerAttribute.PARSE_AS_EXPRESSION;
+				a4.parseType = LayerAttribute.PARSE_AS_EXPRESSION;
+				
+				
+				var pc:ParserController = ParserController.getInstance();
+				
+				// add variables to context
+				pc.setContextVariable( "height", 100 );
+				pc.setContextVariable( "width", 10 );
+				
+				
+				// DISPLAY RESULTS
+				Debug.print("-- SETTING INITIAL VALUES --");
+				Debug.print("a1.parsedValue = " + a1.parsedValue, this);
+				Debug.print("a2.parsedValue = " + a2.parsedValue, this);
+				Debug.print("a3.parsedValue = " + a3.parsedValue, this);
+				Debug.print("a4.parsedValue = " + a4.parsedValue, this);
+				
+				// CHANGING VALUES TEST
+				a1.value = "width-height";
+				a2.value = "height + width";
+				a3.value = "height+width+depth";
+				a4.value = "10.4";
+				
+				Debug.print("-- CHANGING VALUES --");
+				Debug.print("a1.parsedValue = " + a1.parsedValue, this);
+				Debug.print("a2.parsedValue = " + a2.parsedValue, this);
+				Debug.print("a3.parsedValue = " + a3.parsedValue, this);
+				Debug.print("a4.parsedValue = " + a4.parsedValue, this);
+				
+				// CHANGING CONTEXT TEST
+				pc.setContextVariable( "height", 99 );
+				
+				Debug.print("-- CHANGING CONTEXT --");
+				Debug.print("a1.parsedValue = " + a1.parsedValue, this);
+				Debug.print("a2.parsedValue = " + a2.parsedValue, this);
+				Debug.print("a3.parsedValue = " + a3.parsedValue, this);
+				Debug.print("a4.parsedValue = " + a4.parsedValue, this);
+				
+				// update check, none of the attributes should be updated
+				pc.setContextVariable( "height", 99 );
+				pc.setContextVariable( "width", 10 );
+				
+				Debug.print("-- UPDATE CHECK --");
+				Debug.print("a1.parsedValue = " + a1.parsedValue, this);
+				Debug.print("a2.parsedValue = " + a2.parsedValue, this);
+				Debug.print("a3.parsedValue = " + a3.parsedValue, this);
+				Debug.print("a4.parsedValue = " + a4.parsedValue, this);
+				
+				
+				
+				return false;
+			}
+			
+			public function testAttributeData():Boolean {
+				
+				// PARSING EXPRESSIONS TEST
+				var a1:LayerAttribute = new LayerAttribute("mb_d", "h 100 v width");
+				var a2:LayerAttribute = new LayerAttribute("mb_e", "rect width height");
+				
+				a1.parseType = LayerAttribute.PARSE_AS_DATA;
+				a2.parseType = LayerAttribute.PARSE_AS_DATA;
+				
+				var pc:ParserController = ParserController.getInstance();
+				
+				// add variables to context
+				pc.setContextVariable( "height", 100 );
+				pc.setContextVariable( "width", 10 );
+				
+				Debug.print("-- SETTING INITIAL VALUES --");
+				Debug.print("a1.parsedValue = " + a1.parsedValue, this);
+				Debug.print("a2.parsedValue = " + a2.parsedValue, this);
+				
+				// change context value
+				pc.setContextVariable( "width", 100 );
+				
+				// get token structure
+				var tokens:IToken = a2.tokenizedValue;
+				
+				Debug.print("-- CHANGING VALUES --");
+				Debug.print("a1.parsedValue = " + a1.parsedValue, this);
+				Debug.print("a2.parsedValue = " + a2.parsedValue, this);
+				
+				
+				
+				
+				return false;
+				
+			}
+			
+			
+			
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				//testAttributeExpressions();
+				//testAttributeData();
+				testLayer();
+			}
+			
+		]]>
+	</fx:Script>
+</s:Application>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tokenrenderers:BasicTokenRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+								   xmlns:s="library://ns.adobe.com/flex/spark"
+								   xmlns:mx="library://ns.adobe.com/flex/mx"
+								   xmlns:tokenrenderers="com.ludens.PackageHandler.view.VisualEditor.tokenrenderers.*"
+								   width="140" height="36" xmlns:tokens="com.ludens.magicbox.parser.tokens.*">
+	<tokenrenderers:layout>
+		<s:HorizontalLayout/>
+	</tokenrenderers:layout>
+	<fx:Declarations>
+		
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.magicbox.parser.tokens.AssignmentToken;
+			
+			[Bindable] public var assignmentToken:AssignmentToken;
+		]]>
+	</fx:Script>
+	
+	<s:TextInput x="10" y="10" width="56" text="{assignmentToken.variableName}"/>
+	<s:Label height="24" text="=" verticalAlign="middle"/>
+	<s:TextInput width="56" text="{assignmentToken.valueToken.toString()}"/>
+</tokenrenderers:BasicTokenRenderer>

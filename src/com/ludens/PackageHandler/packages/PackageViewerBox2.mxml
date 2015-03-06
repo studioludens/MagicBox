@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageViewer xmlns="com.ludens.PackageHandler.packages.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:flash.filters="flash.filters.*" 
+                xmlns:degrafa1="com.degrafa.*"
+                xmlns:decorators="decorators.*" 
+                xmlns:paint="com.degrafa.paint.*"
+                xmlns:degrafa="http://www.degrafa.com/2007">
+	<!--
+		PACKAGE NAME
+		
+	-->
+	<mx:String id="packageName">Presentation Box with double sides</mx:String>
+	
+	
+	
+	<!--
+		DESCRIPTOR XML
+	
+		all values are in mm
+	-->
+	<mx:XML id="packageVariables" xmlns="">
+		<variables>
+			<variable 
+				name="w" 
+				title="Width" 
+				min="20" max="700" 
+				value="183"
+				display="text"
+			/>
+			<variable 
+				name="h" 
+				title="Height" 
+				min="20" max="700" 
+				value="54"
+				display="text"
+			/>
+			<variable 
+				name="l" 
+				title="Depth" 
+				min="10" max="400" 
+				value="244"
+				display="text"
+			/>
+			
+			
+			<variable 
+				name="flapWidth" 
+				title="Flap Width" 
+				display="slider"
+				min="0" max="100" 
+				value="80"
+			/>
+			
+			<variable 
+				name="flapHeightRatio" 
+				title="Height Ratio" 
+				display="slider"
+				min="0" max="1" 
+				value="0.65"
+			/>
+			<variable 
+				name="t" 
+				title="Thickness" 
+				display="slider"
+				min="0.02" max="4.5" 
+				value="2"
+			/>
+		</variables>
+	</mx:XML>
+	
+	
+	<!--
+		DEFAULT DIMENSIONS
+		
+	-->
+	<mx:Number id="w">183</mx:Number>
+    <mx:Number id="h">54</mx:Number>
+    <mx:Number id="l">244</mx:Number>
+    
+    <!--
+		CALCULATED DIMENSIONS
+	-->
+    <mx:Number id="totalWidth"></mx:Number>
+    <mx:Number id="totalHeight"></mx:Number>
+    
+    <mx:Number id="baseX">
+    	100
+    </mx:Number>
+    <mx:Number id="baseY">
+    	200
+    </mx:Number>
+    
+    <!--
+		DEFAULT PARAMETERS
+	-->
+    
+    
+    <mx:Number id="flapWidth">80</mx:Number>
+    <mx:Number id="t">2</mx:Number>
+    <mx:Number id="p">{h - 2 * t}</mx:Number>
+    <mx:Number id="flapTaper">0.06</mx:Number>
+    <mx:Number id="flapHeightRatio">0.65</mx:Number>
+    
+    <!--
+		OUTLINE DESCRIPTION
+	-->
+    
+    
+    <mx:String id="outline">
+    	v -{h * 1.5}
+    	h {h - 2 * t}
+    	v { h * 1.5 - t * 1.5}
+    	l {t}, {t * 1.5}
+    	m -{t}, -{h}
+    	
+    	l {t * 2}, -{t * 3}
+    	v -{h - t * 2.5}
+    	h {l/2 - t*2 - flapWidth/2}
+    	l {t}, -{t * 2}
+    	h {flapWidth - t * 2}
+    	l {t}, {t * 2}
+    	h {l/2 - t*2 - flapWidth/2}
+    	v {h - t * 2.5}
+    	l {t * 2}, {t * 3}
+    	v {h - t * 1.5}
+    	l -{t}, {t * 1.5}
+    	m {t}, -{h}
+    	
+    	v -{h / 2}
+    	h {h - t * 2}
+    	v {h * 1.5}
+    	v {t * 2}
+    	l {h * flapHeightRatio}, {w * flapTaper}
+    	v {w - flapTaper * 2 - t * 7}
+    	l -{h * flapHeightRatio}, {w * flapTaper}
+    	v {t * 2}
+    	v {l + t}
+    	h -{p / 3}
+    	l -{t}, -{t * 2}
+    	m {t}, {t * 2}
+    	
+    	l {t}, {t * 2}
+    	l -{t * 2.5}, {p / 2}
+    	h -{p / 3 - t * 3}
+    	l -{t * 2.5}, -{p/2}
+    	l {t * 2}, -{t * 4}
+    	m -{t}, {t * 2}
+    	
+    	h -{p / 3}
+    	v -{l + t * 1.5}
+    	l -{t}, -{t * 1.5}
+    	m {t}, {t * 1.5}
+    	v {h + w}
+    	
+    	h -{l/2 - flapWidth/2 + t * 2}
+    	l -{t}, -{t * 3}
+    	m {t}, {t * 3}
+    	l {t}, {t * 3}
+    	l -{t * 2}, {h / 2}
+    	h -{flapWidth - t * 6}
+    	l -{t * 2}, -{h / 2}
+    	l {t * 2}, -{t * 6}
+    	m -{t}, {t * 3}
+    	h -{l/2 - flapWidth/2 + t * 2}
+    	v -{w + h}
+    	l {t}, -{t * 3}
+    	m -{t}, {t * 3}
+    	v {l - t * 4}
+    	h -{p}
+    	v -{l - t * 4}
+    	v -{t * 3}
+    	l -{h * flapHeightRatio}, -{w * flapTaper}
+    	v -{w - flapTaper * 2 - t * 7}
+    	l {h * flapHeightRatio}, -{w * flapTaper}
+    	v -{t * 2}
+    	
+    </mx:String>
+    
+    <!--
+		DRAWING SURFACE
+	-->
+	<degrafa:Surface id="surface">
+        <degrafa:strokes>
+            <degrafa:SolidStroke     id="whiteStroke"
+                                    color="#FFF"
+                                    weight="1"
+                                    alpha=".1"/>
+            
+            <degrafa:SolidStroke     id="drawingStroke"
+                                    color="#FFF"
+                                    weight="1"
+                                    alpha="1"/>
+            
+            <degrafa:SolidStroke     id="testStroke"
+                                    color="#FF0000"
+                                    weight="1"
+                                    alpha="1"/>
+        </degrafa:strokes>
+    
+    	<degrafa:GeometryGroup id="outlineDrawing">
+    
+    		<degrafa:GeometryGroup x="{baseX}" y="{baseY}">
+    	
+		    	<degrafa:fills>
+					
+					<paint:SolidFill
+									id="solidFill"
+									color="0xCCCCCC"
+									alpha=".25"
+									/>
+					
+				</degrafa:fills>
+				
+				<!-- MAIN OUTLINE -->
+				<degrafa:GeometryGroup>
+				<!--<degrafa:GeometryGroup fill="{solidFill}">-->
+					<!-- main outline -->
+					
+					<degrafa:Path data="
+							M 0,0
+							{outline}
+							" 
+						stroke="{drawingStroke}"/>
+		
+				</degrafa:GeometryGroup>
+				
+		    	<degrafa:GeometryGroup>
+		    		
+		    	<!-- left and right flap cut lines -->
+				
+					<!-- right part cut lines -->
+					<!--
+					<degrafa:Path data="
+							M {box_width}, {box_height}
+							h {box_depth}" stroke="{drawingStroke}"/>
+							-->
+					<!-- left part cut lines -->
+					<!--
+					<degrafa:Path data="
+							M 0, { box_height + box_depth}
+							h -{box_depth - 3* t}" 
+						stroke="{drawingStroke}"/>
+					
+					<degrafa:Path data="
+							M 0, {  box_height * 2 + box_depth}
+							h -{box_depth - 3* t}" 
+						stroke="{drawingStroke}"/>
+					
+					<degrafa:Path data="
+							M { - box_depth - t}, { box_height + box_depth + t * 2}
+							v {box_height / 8}
+							h {t * 2}" 
+						stroke="{drawingStroke}"/>
+						
+					<degrafa:Path data="
+							M { - box_depth - t}, { box_height * 2 + box_depth - t * 2}
+							v -{box_height / 8}
+							h {t * 2}" 
+						stroke="{drawingStroke}"/>
+						-->
+			    	<!-- score lines -->
+			    	<!--
+			    	<degrafa:Path data="M 0,0 h {box_width } 
+			    						v { box_height + box_depth} 
+			    						m 0, {box_height} 
+			    						v {box_depth} 
+			    						m -{box_width},0 
+			    						v -{box_depth * 2 + box_height }
+			    						h {box_width}
+			    						m -{box_width}, {box_depth}
+			    						h {box_width}
+			    						m -{box_width}, {box_height}
+			    						h {box_width}" 
+			    					stroke="{drawingStroke}">
+			    		<degrafa:decorators>
+					  	  <degrafa:SVGDashLine dashArray="3"/>
+					    </degrafa:decorators>
+			    	</degrafa:Path>
+					-->
+					<!-- score line for right flap -->
+					<!--
+					<degrafa:Path data="
+							M {box_width + box_depth}, 0
+							v {box_height}" 
+						stroke="{drawingStroke}">
+						<degrafa:decorators>
+					  	  <degrafa:SVGDashLine dashArray="3"/>
+					    </degrafa:decorators>
+					</degrafa:Path>
+					-->
+					<!-- score line for left flap -->
+					<!--
+					<degrafa:Path data="
+							M { - box_depth}, {box_height * (9/8) + box_depth + t * 2}
+							v { box_height*(6/8) - t * 4}" 
+						stroke="{drawingStroke}">
+						<degrafa:decorators>
+					  	  <degrafa:SVGDashLine dashArray="3"/>
+					    </degrafa:decorators>
+					</degrafa:Path>
+					-->
+		    	</degrafa:GeometryGroup>
+					
+		    </degrafa:GeometryGroup>
+    	</degrafa:GeometryGroup>
+    </degrafa:Surface>
+</PackageViewer>

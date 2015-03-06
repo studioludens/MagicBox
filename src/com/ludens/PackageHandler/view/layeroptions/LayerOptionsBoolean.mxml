@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layeroptions:LayerOptionsBase xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							   xmlns:s="library://ns.adobe.com/flex/spark" 
+							   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:layeroptions="com.ludens.PackageHandler.view.layeroptions.*" width="400" height="300">
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.magicbox.model.layer.BooleanLayer;
+			import com.ludens.magicbox.model.layer.Layer;
+			
+			[Bindable] private var layer:BooleanLayer;
+			
+			override public function get data():Layer
+			{
+				return super.data;
+			}
+			
+			override public function set data(value:Layer):void
+			{
+				if( super.data != value ){
+					
+					// set specific data type
+					if( value is BooleanLayer ) layer = BooleanLayer(value);
+					
+					super.data = value;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<fx:Array id="booleanTypes">
+			<fx:String>none</fx:String>
+			<fx:String>union</fx:String>
+			<fx:String>difference</fx:String>
+			<fx:String>intersection</fx:String>
+			<fx:String>xor</fx:String>
+		</fx:Array>
+		<s:ArrayCollection id="booleanTypesList" source="{booleanTypes}"/>
+	</fx:Declarations>
+	
+	<mx:Label x="0" y="0" text="boolean" textAlign="right" width="55"/>
+	<s:HGroup left="58" right="0">
+		<s:ComboBox id="typeCB"
+					y="1" x="0"
+					dataProvider="{booleanTypesList}" 
+					selectedItem="{BooleanLayer(layer).booleanType}"
+					change="{BooleanLayer(layer).booleanType = typeCB.selectedItem; doChange();}" width="77"
+					styleName="smallText" height="20">
+		
+		</s:ComboBox>
+	</s:HGroup>
+</layeroptions:LayerOptionsBase>

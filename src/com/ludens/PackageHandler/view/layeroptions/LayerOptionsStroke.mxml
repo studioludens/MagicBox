@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layeroptions:LayerOptionsBase xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							   xmlns:s="library://ns.adobe.com/flex/spark" 
+							   xmlns:mx="library://ns.adobe.com/flex/mx" 
+							   xmlns:layeroptions="com.ludens.PackageHandler.view.layeroptions.*" 
+							   height="26">
+	<fx:Declarations>
+		<fx:Number id="subSelectionAlpha">{lineStyleCB.selected ? 1 : .2}</fx:Number>
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.lorentz.SVG.SVGColor;
+			import com.ludens.magicbox.model.layer.Layer;
+			import com.ludens.utils.BooleanUtil;
+			
+		]]>
+	</fx:Script>
+	
+	<mx:CheckBox id="lineStyleCB" 
+						 selected="{ data.showStroke }"
+						 change="{ data.showStroke = (lineStyleCB.selected ? true : false); doChange() }" 
+						 label="line" labelPlacement="right" fontWeight="bold"  x="0" y="3"
+						 toolTip="if checked the line will be shown"
+				 />
+	
+	<mx:NumericStepper id="lineThicknessStepper"
+					   value="{ Number(data.strokeWidth) }"
+					   change="{ data.strokeWidth = String(lineThicknessStepper.value); doChange() }" 
+					   styleName="smallText" 
+					   width="40" height="16" minimum="0" maximum="500" y="4" right="0"
+					   toolTip="line thickness"
+					   
+					   enabled="{data.showStroke}"
+					   alpha="{subSelectionAlpha}"
+					   
+					   />		
+	<mx:ColorPicker id="LineColorPicker" 
+					selectedColor="{ SVGColor.parseToInt(String(data.stroke).toLowerCase()) }" 
+					width="16" height="16" 
+					change="{ data.stroke = SVGColor.flashToSVG(LineColorPicker.selectedColor); doChange() }" x="59" y="3"
+					toolTip="line color" 
+					
+					enabled="{data.showStroke}"
+					alpha="{subSelectionAlpha}"
+					
+					/>
+	
+	<s:HSlider id="lineAlphaSlider" 
+			   value="{ Number(data.strokeOpacity) }"
+			   change="{ data.strokeOpacity = String(lineAlphaSlider.value); doChange() }"
+			   minimum="0" maximum="1" y="4.5" snapInterval="0" liveDragging="true" left="80" right="45"
+			   toolTip="line opacity"
+			   
+			   enabled="{data.showStroke}"
+			   alpha="{subSelectionAlpha}"
+			   
+			   />
+</layeroptions:LayerOptionsBase>

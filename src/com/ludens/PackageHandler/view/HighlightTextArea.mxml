@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:RichEditableText xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			xmlns:s="library://ns.adobe.com/flex/spark" 
+			xmlns:mx="library://ns.adobe.com/flex/mx"
+			 creationComplete="textarea1_creationCompleteHandler(event)"
+			  focusIn="focusInHandler(event)"
+			  focusOut="focusOutHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.utils.Debug;
+			
+			import flashx.textLayout.formats.TextLayoutFormat;
+			
+			import mx.events.FlexEvent;
+
+			protected function textarea1_creationCompleteHandler(event:FlexEvent):void
+			{ 
+				_dataInputTimer.addEventListener(TimerEvent.TIMER, dataInputTimerHandler );
+				
+			}
+			
+			
+			/**
+			 * functions for the data input field.
+			 * we are doing some nice code highlighting!
+			 */
+			
+			
+			private var _textColours:Object = { 
+				text: 0xFFFFFF, 
+				keyword: 0xAAE8F9,
+				parameter: 0xFCAC70,
+				drawingToken: 0xE9F978,
+				functionToken: 0xC2ABF4,
+				comment: 0x999999
+			};
+			private var _keywords:Array = new Array( "if", "set", "repeat", "else", "each", "define", "\\[", "\\]", "union", "difference", "intersection", "xor");
+			private var _drawingTokens:Array = new Array( "a", "A", "c", "C", "h", "H", "l", "L", "m", "M", "q", "Q", "t", "T", "v", "V", "z", "Z");
+			
+			[Bindable] public var parametersHighlight:Array;
+			[Bindable] public var functionsHighlight:Array;
+			
+			private var _dataInputTimer:Timer = new Timer( 500 );
+			
+			private function dataInputChangeHandler(e:KeyboardEvent = null):void {
+				
+				_dataInputTimer.reset();
+				_dataInputTimer.start();
+			}
+			
+			/**
+			 * data input is timed, so we can stay responsive
+			 */
+			
+			
+			
+			public function dataInputTimerHandler(e:TimerEvent):void {
+				_dataInputTimer.stop();
+				Debug.print("Applying Highlight", this);
+				doHighlight();
+			}
+			
+			/**
+			 * parses the text and highlights the specific keywords
+			 */
+			public function doHighlight():void {
+				
+				var _textTLF:TextLayoutFormat = new TextLayoutFormat();
+				_textTLF.color = _textColours.text;
+				// clear format first
+				//this.textDisplay.setFormatOfRange( _textTLF, 0, this.text.length );
+				this.setFormatOfRange( _textTLF, 0, this.text.length );
+				
+				//highlightWords( _keywords, _textColours.keyword );
+				highlightWords( _drawingTokens, _textColours.drawingToken );
+				highlightWords( _keywords, _textColours.keyword );
+				
+				
+				
+				if(parametersHighlight) highlightWords( parametersHighlight, _textColours.parameter);
+				if(functionsHighlight) highlightWords( functionsHighlight, _textColours.functionToken);
+				
+				highlightRegExp( "(#.*)[\\r\\n$]", _textColours.comment );
+			}
+			
+			private function highlightWords( wordArray:Array, color:uint):void {
+				
+				if( wordArray.length == 0) return;
+				
+				// do a regExp for the specific word
+				
+				var regString:String = "\\b(" + wordArray.join("|") + ")\\b"; 
+				
+				highlightRegExp( regString, color );
+					
+			}
+			
+			/** 
+			 * highlight text matching the regular expression with the color
+			 */
+			private function highlightRegExp( regString:String, color:uint ):void {
+				
+				//Debug.print( "regular exp: " + regString, this );
+				var regex:RegExp = new RegExp( regString, "gm");
+				
+				var match:Object = null;
+				
+				var _textTLF:TextLayoutFormat = new TextLayoutFormat();
+				_textTLF.color = color;
+				
+				while( match = regex.exec( this.text )){
+					// we found a match!
+					//Debug.print("Match found!");
+					//var startIndex:int = match.index + match[1].length;
+					//this.textDisplay.setFormatOfRange( _textTLF, startIndex,  startIndex + match[2].length );
+					
+					var startIndex:int = match.index;
+					//this.textDisplay.setFormatOfRange( _textTLF, startIndex,  startIndex + match[1].length );
+					this.setFormatOfRange( _textTLF, startIndex,  startIndex + match[1].length );
+				}
+			}
+			
+			override protected function focusInHandler(e:FocusEvent):void {
+				this.addEventListener( KeyboardEvent.KEY_UP, dataInputChangeHandler );
+			}
+			
+			override protected function focusOutHandler(e:FocusEvent):void {
+				this.removeEventListener( KeyboardEvent.KEY_UP, dataInputChangeHandler );
+			}
+
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</s:RichEditableText>

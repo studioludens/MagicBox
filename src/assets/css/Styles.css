@@ -1,0 +1,337 @@
+
+/* CSS file */
+@namespace mx "library://ns.adobe.com/flex/mx";
+@namespace super "net.brandonmeyer.containers.*";
+@namespace view "com.ludens.PackageHandler.view.*";
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace sparkTree "com.sparkTree.*";
+@namespace itemrenderers "com.ludens.PackageHandler.view.itemrenderers.*";
+
+global {
+	
+	modalTransparencyBlur: 10;
+	modalTransparency: 0.6;
+	modalTransparencyColor: #111111;
+	modalTransparencyDuration: 250;
+}
+
+mx|Application
+{
+	/*theme-color:				#333333;*/
+	chrome-color:				#333333;
+	focus-color: 		#333333;
+	selection-color: 		#333333;
+	roll-over-color: 		#333333;
+	
+	padding-top:				0;
+	padding-bottom:				0;
+	padding-left:				0;
+	padding-right:				0;
+}
+
+mx|ToolTip {
+	
+	backgroundColor: #111111;
+	color: #ffffff;
+	
+	cornerRadius: 5;
+}
+
+mx|Label, mx|TextInput, mx|TextArea {
+	color: #eee;
+	content-background-color: #222222;
+	selection-color: #cccccc;
+}
+
+s|TextInput {
+	color: #eee;
+	content-background-color: #222222;
+	selection-color: #cccccc;
+	focusedTextSelectionColor: #777777;
+}
+
+s|DropDownList {
+	content-background-color: #222222;
+}
+
+mx|TextArea {
+	
+	content-background-color: #222222;
+	content-background-alpha: 1;
+}
+
+
+mx|CheckBox
+{
+    color: 						#ffffff;
+    text-selected-color: 		#999999;
+    text-roll-over-color: 		#cccccc;
+    /*fill-alphas: 				0.6, 0.4, 0.75, 0.65;
+    fill-colors: 				#cccccc, #999999, #ffffff, #eeeeee;
+	*/
+	symbolColor: #ffffff;
+}
+
+
+
+mx|Button 
+{
+    corner-radius: 				1;
+    /*highlight-alphas: 			0.28, 0.3;*/
+    /*fill-alphas: 				1, 1, 1, 1;
+    fill-colors: 				#666666, #000000, #999999, #666666;*/
+    color: 						#ffffff;
+    text-roll-over-color: 		#ffffff;
+    text-selected-color: 		#ffffff;
+	
+	horizontalGap:				5;
+	
+	textRollOverColor: 			#ffffff;
+}
+
+	.noStyleButton {
+	
+		skin: ClassReference( null );
+		upSkin: ClassReference( null );
+		overSkin: ClassReference( null );
+		downSkin: ClassReference( null );
+		selectedUpSkin: ClassReference( null );
+		selectedOverSkin: ClassReference( null );
+		selectedDownSkin: ClassReference( null );
+	}
+	
+	
+mx|List {
+	
+	paddingTop: 0;
+	paddingBottom: 0;
+
+	dropIndicatorSkin: ClassReference( "com.ludens.PackageHandler.view.GreyDropIndicator" );	
+	
+}
+
+sparkTree|DefaultDisclosureButton {
+	disclosureClosedIcon: Embed(source="/../assets/sparkTree/disclosureClosedIcon.png");
+	disclosureOpenIcon: Embed(source="/../assets/sparkTree/disclosureOpenIcon.png");
+}
+
+sparkTree|Tree {
+	disclosureClosedIcon: Embed(source="/../assets/sparkTree/disclosureClosedIcon.png");
+	disclosureOpenIcon: Embed(source="/../assets/sparkTree/disclosureOpenIcon.png");
+}
+/*
+mx|Form {
+	
+	paddingLeft: 0;
+	paddingRight: 0;
+	paddingTop: 0;
+	paddingBottom: 0;
+}*/
+
+
+mx|Panel {
+	
+	titleStyleName: "titleStyleName";
+	controlBarStyleName: "controlBarStyle";
+	backgroundColor: #444444;
+	/*themeColor: #222222;
+*/
+	
+	dropShadowVisible: false;
+}
+
+	.titleStyleName {
+		
+		contentBackgroundColor: #222222;
+		color: #ffffff;
+	}
+	
+	.controlBarStyle {
+	
+		paddingLeft: 		3;
+		paddingRight: 		3;
+		paddingTop: 		3;
+		paddingBottom: 		3;	
+		
+		horizontalGap: 		3;
+		horizontalAlign: 	"right";
+		
+		contentBackgroundColor: #222222;
+		backgroundColor: #222222;
+		color: #ffffff;
+	}
+
+sparkTree|Tree {
+	contentBackgroundColor: #222222;
+}
+/*
+super|SuperPanel
+{
+	resize-grip-skin:          	Embed(source="/../assets/images/resizeHandler.png");
+	
+	actionAlpha:		 		0.5;
+    *//*border-color: 				#ffffff;
+    border-alpha: 				1;
+    border-thickness-left: 		0;
+    border-thickness-top: 		0;
+    border-thickness-bottom:	9;
+    border-thickness-right: 	0;
+    corner-radius: 				6;
+    highlight-alphas: 			0.1, 0;
+    header-colors: 				#666666, #333333;
+    footer-colors: 				#ffffff, #ffffff;
+    dropShadowEnabled: 			true;
+    shadow-distance:			4;
+    *//*
+    
+    title-style-name:			"mypanelTitle";
+    close-button-style-name:	"closeButton";
+    minimize-button-style-name:	"minimizeButton";
+    maximize-button-style-name:	"maximizeButton";
+    
+    inactive-header-colors: 	#999999, #666666;
+    inactive-footer-colors: 	#ffffff, #ffffff;
+	inactive-shadow-distance:	1;
+	inactive-title-style-name:	"mypanelInactiveTitle";
+}*/
+
+.closeButton
+{
+	icon: 						Embed(source="/../assets/images/icon_close_up.png");
+	up-icon: 					Embed(source="/../assets/images/icon_close_up.png");
+	over-icon: 					Embed(source="/../assets/images/icon_close_over.png");
+	down-icon: 					Embed(source="/../assets/images/icon_close_down.png");
+	disabled-skin: 				Embed(source="/../assets/images/clear.png");
+	selected-up-skin: 			Embed(source="/../assets/images/clear.png");
+	selected-over-skin: 		Embed(source="/../assets/images/clear.png");
+	selected-down-skin: 		Embed(source="/../assets/images/clear.png");
+    down-skin: 					Embed(source="/../assets/images/clear.png");
+    over-skin: 					Embed(source="/../assets/images/clear.png");
+    up-skin: 					Embed(source="/../assets/images/clear.png");	
+}
+
+.maximizeButton
+{
+	icon: 						Embed(source="/../assets/images/icon_expand_up.png");
+	up-icon: 					Embed(source="/../assets/images/icon_expand_up.png");
+	over-icon: 					Embed(source="/../assets/images/icon_expand_over.png");
+	selected-over-icon: 		Embed(source="/../assets/images/icon_expand_over.png");
+	down-icon: 					Embed(source="/../assets/images/icon_expand_down.png");
+	selected-down-icon: 		Embed(source="/../assets/images/icon_expand_down.png");
+	disabled-skin: 				Embed(source="/../assets/images/clear.png");
+	selected-up-skin: 			Embed(source="/../assets/images/clear.png");
+	selected-over-skin: 		Embed(source="/../assets/images/clear.png");
+	selected-down-skin: 		Embed(source="/../assets/images/clear.png");
+    down-skin: 					Embed(source="/../assets/images/clear.png");
+    over-skin: 					Embed(source="/../assets/images/clear.png");
+    up-skin: 					Embed(source="/../assets/images/clear.png");	
+}
+
+.minimizeButton
+{
+	icon: 						Embed(source="/../assets/images/icon_minimize_up.png");
+	up-icon: 					Embed(source="/../assets/images/icon_minimize_up.png");
+	over-icon: 					Embed(source="/../assets/images/icon_minimize_over.png");
+	selected-over-icon: 		Embed(source="/../assets/images/icon_minimize_over.png");
+	down-icon: 					Embed(source="/../assets/images/icon_minimize_down.png");
+	selected-down-icon: 		Embed(source="/../assets/images/icon_minimize_down.png");
+	disabled-skin: 				Embed(source="/../assets/images/clear.png");
+	selected-up-skin: 			Embed(source="/../assets/images/clear.png");
+	selected-over-skin: 		Embed(source="/../assets/images/clear.png");
+	selected-down-skin: 		Embed(source="/../assets/images/clear.png");
+    down-skin: 					Embed(source="/../assets/images/clear.png");
+    over-skin: 					Embed(source="/../assets/images/clear.png");
+    up-skin: 					Embed(source="/../assets/images/clear.png");
+}
+
+.mypanelTitle
+{
+	font-weight:				bold;
+    color: 						#ffffff;
+}
+
+.mypanelInactiveTitle
+{
+	font-weight:				bold;
+    color: 						#bbbbbb;
+}
+
+.leftBox
+{
+	border-style:				solid;
+	border-sides:				right;
+	border-color:				#666666;
+	background-color:			#000000;
+	background-alpha:			0.6;
+	
+	padding-top:				20;
+	padding-bottom:				20;
+	padding-left:				20;
+	padding-right:				20;
+}
+
+/*
+view|BoxPanel {
+	
+	
+	addItemButtonStyleName: "addItemButton";
+}*/
+
+.addItemButton {
+	
+	upSkin: Embed(source="/../assets/images/add_grey.png");
+	overSkin: Embed(source="/../assets/images/add.png");
+	downSkin: Embed(source="/../assets/images/add_dark.png");
+	
+	disabled-skin: 				Embed(source="/../assets/images/clear.png");
+	selected-up-skin: 			Embed(source="/../assets/images/clear.png");
+	selected-over-skin: 		Embed(source="/../assets/images/clear.png");
+	selected-down-skin: 		Embed(source="/../assets/images/clear.png");
+}
+
+view|LayerOptions {
+	horizontal-scroll-policy: off;
+	vertical-scroll-policy: off;
+}
+
+.codeTextStyle {
+	font-family: "Andale Mono", "Courier New";
+	font-size: 12;
+	color: #FFFFFF;
+	content-background-color: #222222;
+	content-background-alpha: 1;
+	focusedTextSelectionColor: #777777;
+	line-height: 15;
+}
+
+.textareaTextStyle {
+	font-size: 12;
+	color: #FFFFFF;
+	content-background-color: #222222;
+	content-background-alpha: 1;
+	focusedTextSelectionColor: #777777;
+	line-height: 15;
+}
+	
+.smallText {
+	
+	fontSize: 11;
+}
+
+.settingsBox {
+	
+	borderSides: "top";
+	borderColor: #777777;
+	borderStyle: "solid";
+	
+	verticalGap: 0;
+	
+	paddingBottom: 20;
+}
+
+.layerOptions {
+	padding-left: 10;
+	padding-right: 10;
+	padding-top: 10;
+	padding-bottom: 10;
+}

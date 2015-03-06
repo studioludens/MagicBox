@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="400" minHeight="300" width="601" height="432" xmlns:userservice="com.ludens.magicbox.services.userservice.*">
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			
+			protected function dataGrid_creationCompleteHandler(event:FlexEvent):void
+			{
+				getAllUserResult.token = userService.getAllUser();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:CallResponder id="getAllUserResult"/>
+		<userservice:UserService id="userService" fault="Alert.show(event.fault.faultString + '\n' + event.fault.faultDetail)" showBusyCursor="true"/>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<mx:DataGrid x="10" y="39" width="581" height="285" id="dataGrid" creationComplete="dataGrid_creationCompleteHandler(event)" dataProvider="{getAllUserResult.lastResult}">
+		<mx:columns>
+			<mx:DataGridColumn headerText="id" dataField="id"/>
+			<mx:DataGridColumn headerText="name" dataField="name"/>
+			<mx:DataGridColumn headerText="fullname" dataField="fullname"/>
+			<mx:DataGridColumn headerText="email" dataField="email"/>
+			<mx:DataGridColumn headerText="password" dataField="password"/>
+			<mx:DataGridColumn headerText="created_at" dataField="created_at"/>
+			<mx:DataGridColumn headerText="updated_at" dataField="updated_at"/>
+			<mx:DataGridColumn headerText="type" dataField="type"/>
+		</mx:columns>
+	</mx:DataGrid>
+	<s:Label x="10" y="10" text="Webserver Test" fontSize="20"/>
+</s:Application>

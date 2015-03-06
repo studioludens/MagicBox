@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			    creationComplete="application1_creationCompleteHandler(event)">
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import com.lorentz.SVG.SVGRenderer;
+			import com.ludens.utils.MagicBoxXMLUtil;
+			
+			import mx.events.FlexEvent;
+
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				var x:XML = new XML(textSVG);
+				
+				var svgPrev:SVGRenderer = new SVGRenderer(x, true);
+				
+				previewBox.rawChildren.addChild( svgPrev );
+				invalidateDisplayList();
+				//trace(MagicBoxXMLUtil.simplifyXMLAttributeName("mb_attrSlash"));
+				
+				//trace(x.item.@mb_attrSlash);
+				
+				
+			}
+
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:String xmlns="" id="textSVG">
+			<![CDATA[
+			<?xml version="1.0" standalone="no"?>
+			<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+			<svg width="100%" height="100%" version="1.1" xmlns="http://www.w3.org/2000/svg">
+				<desc>Magic box - output file</desc>
+				<g transform='scale(2.83464567)'>
+					<text id="text 1" x="50" y="50" fill="#000000" opacity="1" visibility="visible" font-size="12" font-family="Arial">
+						 <tspan x="50" dy="0">Hello World!</tspan>
+						 <tspan x="50" dy="12">and some more text</tspan>
+						 <transforms/>
+					 </text>
+				</g>
+			</svg>
+			]]>
+		</fx:String>
+	</fx:Declarations>
+	
+	<mx:Canvas id="previewBox" 
+			   horizontalScrollPolicy="off" verticalScrollPolicy="off" left="0" right="0" top="0" bottom="0">
+	</mx:Canvas>
+</s:Application>

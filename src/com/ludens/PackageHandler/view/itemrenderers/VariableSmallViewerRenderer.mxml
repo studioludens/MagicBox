@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas
+	
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:text="com.ludens.components.text.*" 
+	xmlns:components="com.ludens.text.components.*" 
+	xmlns:s="library://ns.adobe.com/flex/spark"
+	xmlns:lti="com.ludens.PackageHandler.view.labeltextinput.*"
+	
+	width="100%"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off" 
+	 clipContent="false" addedToStage="onATS(event)"
+	 
+	 >
+	
+	<mx:Array id="typeData">
+		<mx:String>slider</mx:String>
+		<mx:String>stepper</mx:String>
+		<mx:String>expression</mx:String>
+		<mx:String>list</mx:String>
+		<mx:String>text</mx:String>
+	</mx:Array>
+	
+	
+	<mx:Style>
+		
+		.smallText {
+			
+			font-size: 12;
+			color: #222222;
+		}
+		
+		.settingsBox {
+			
+			borderSides: top;
+			borderColor: #777777;
+			borderStyle: "solid";
+			
+			verticalGap: 0;
+			
+			paddingBottom: 20;
+		}
+		
+		.group {
+			padding: 0;
+			margin: 0;
+		}
+		
+		.smallInput {
+			font-size: 12;
+			color: #222222;
+			
+		}
+		
+	</mx:Style>
+	
+	
+	<mx:Canvas
+		 styleName="group"
+		visible="{XML(data).@type != 'expression' &amp;&amp; XML(data).@type != 'list'}" 
+		includeInLayout="{XML(data).@type != 'expression' &amp;&amp; XML(data).@type != 'list'}"
+		left="0" right="0">
+		
+	
+
+	<mx:Label width="75"
+		id="varName"
+		text="{ String( XML(data).@name ).replace('_', ' ') }" 
+		visible="{XML(data).@type != 'expression'}" styleName="smallText"
+		toolTip="{ XML(data).@description }" left="0" top="4"/>		
+	
+	
+	<s:Group id="valueControlBox" styleName="group" right="0" left="80">
+		
+		<s:HSlider  	value="{XML(data).@value}" 
+						id="sliderValue" 
+						left="0" right="30"
+						minimum="{XML(data).@min}" maximum="{XML(data).@max}" 
+						visible="{XML(data).@type == 'slider'}"
+						includeInLayout="{XML(data).@type == 'slider'}"
+						snapInterval="0"
+						liveDragging="true"
+						change="sliderChangeHandler(event)" y="8"/>
+		<mx:NumericStepper
+						value="{XML(data).@value}" 
+						id="stepperValue" 
+						left="0" right="30"
+						minimum="{XML(data).@min}" maximum="{XML(data).@max}" 
+						visible="{XML(data).@type == 'stepper'}"
+						includeInLayout="{XML(data).@type == 'stepper'}"
+						change="stepperChangeHandler(event)" height="24"/>
+		
+		<mx:TextInput 
+						id="textValue" 
+						styleName="smallInput"
+						text="{XML(data).@value}" 
+						focusOut="textChangeHandler(event)"
+						keyDown="textKeyDownHandler(event)"
+						includeInLayout="{XML(data).@type == 'text'}"
+						visible="{XML(data).@type == 'text'}"
+						
+					 left="0" right="30"/>
+		<mx:Label right="3" textAlign="right" styleName="smallText" text="mm"
+				  visible="{XML(data).@type != 'expression'}"
+				   y="4"/>
+		
+	</s:Group>	
+
+
+	</mx:Canvas>
+	
+	<mx:Script>
+		<![CDATA[
+			import com.ludens.PackageHandler.events.DescriptorEvent;
+			import com.ludens.PackageHandler.events.StateEvent;
+			import com.ludens.utils.BooleanUtil;
+			
+			import mx.events.ListEvent;
+			import mx.events.PropertyChangeEvent;
+			import mx.skins.halo.ListDropIndicator;
+			import com.ludens.utils.Debug;
+
+
+			private var dataChangedSinceMouseDown:Boolean = false;
+			private var nameChangedSinceFocus:Boolean = false;
+
+			
+			
+			[Bindable]
+			private var optionsVisible:Boolean = false;
+			
+			
+			
+			
+			private function onATS( e:Event ):void {
+				
+				stage.addEventListener( MouseEvent.MOUSE_UP, stageMouseUpHandler );
+				
+				
+				Debug.print( "description length: " + String( XML(data).@description ).length , this);
+			}
+			
+		
+			
+			private function stageMouseUpHandler( e:MouseEvent ):void {
+				
+				if( dataChangedSinceMouseDown ) {
+					
+					dataChangedSinceMouseDown = false;
+					doSaveRequest();
+				}
+			}
+			
+			private function textFocusOutHandler( e:FocusEvent ):void {
+				
+				if( nameChangedSinceFocus ) {
+					
+					nameChangedSinceFocus = false;
+					doSaveRequest();
+				}
+			}
+			
+			
+			private function doSaveRequest():void {
+				
+				trace( "[VariableEditorRenderer] doSaveRequest" );
+				
+				var event:StateEvent = new StateEvent( StateEvent.REQUEST_SAVE, true );
+				dispatchEvent( event );
+			}
+			
+			
+			
+			
+			private function sliderChangeHandler(e:Event):void {
+				
+				dataChangedSinceMouseDown = true;
+				
+				var _oldValue:Number = data.@value;	
+				data.@value = sliderValue.value;
+				
+				//var evt:PropertyChangeEvent = PropertyChangeEvent.createUpdateEvent(data, "@value", _oldValue, varValue.value);
+				var evt:ListEvent = new ListEvent(ListEvent.CHANGE, true);
+								
+				dispatchEvent(evt);
+			}
+			
+			private function stepperChangeHandler(e:Event):void {
+				
+				doSaveRequest();
+				
+				var _oldValue:Number = data.@value;	
+				data.@value = stepperValue.value;
+				
+				//var evt:PropertyChangeEvent = PropertyChangeEvent.createUpdateEvent(data, "@value", _oldValue, varValue.value);
+				var evt:ListEvent = new ListEvent(ListEvent.CHANGE, true);
+				dispatchEvent(evt);
+			}
+			
+			private function textChangeHandler(e:Event):void {
+				
+				nameChangedSinceFocus = true;
+				
+				var _oldValue:String = data.@value;	
+				
+				data.@value = e.target.text;
+				
+				//var evt:PropertyChangeEvent = PropertyChangeEvent.createUpdateEvent(data, "@value", _oldValue, varValue.value);
+				var evt:ListEvent = new ListEvent(ListEvent.CHANGE, true);
+				
+				dispatchEvent(evt);
+			}
+			
+			private function textKeyDownHandler(e:KeyboardEvent):void {
+				// only change the value if the enter or Tab key have been pressed
+				
+				//Debug.print("Key pressed: " + e.keyCode, this);
+				
+				// Enter key pressed
+				if(e.keyCode == 13){
+					data.@value = e.target.text;
+					
+					var evt:ListEvent = new ListEvent(ListEvent.CHANGE, true);
+					
+					dispatchEvent(evt);
+					
+				}
+
+			}
+			
+			private function nameChangedHandler(e:Event):void {
+				
+				nameChangedSinceFocus = true;
+				
+				data.@name = varName.text;
+				
+				//var evt:PropertyChangeEvent = PropertyChangeEvent.createUpdateEvent(data, "@value", _oldValue, varValue.value);
+				var evt:ListEvent = new ListEvent(ListEvent.CHANGE, true);
+				//evt.bubbles = true;
+				dispatchEvent(evt);
+				
+			}
+			
+			private function deleteHandler(e:MouseEvent):void {
+				// fire a delete event
+				
+				doSaveRequest();
+
+				var de:DescriptorEvent = new DescriptorEvent(DescriptorEvent.DELETE, true);
+				
+				de.descriptor = data as XML;
+				dispatchEvent(de);
+			}
+			
+		
+			
+		]]>
+	</mx:Script>
+</mx:Canvas>

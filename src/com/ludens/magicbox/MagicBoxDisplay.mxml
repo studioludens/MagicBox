@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" 
+		   xmlns:model="com.ludens.magicbox.model.*" 
+		   
+		   width="400" height="300"
+		   creationComplete="creationCompleteHandler(event)">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		
+		<model:Template id="template" 
+						layersXML="{ layersXML }" 
+						variablesXML="{ variablesXML }" 
+						info="{ infoXML }" />
+		
+		<fx:XML xmlns="" id="infoXML">
+		<info>
+			<title>Magic Box Design</title>
+			<id>magicbox.empty</id>
+			<author></author>
+			<website>http://magic-box.org/</website>
+			<tutorial></tutorial>
+			<description>A default design</description>
+		</info>
+		</fx:XML>
+		
+		
+		<fx:XMLList xmlns="" id="variablesXML"/>
+		<fx:XMLList xmlns="" id="layersXML"/>
+		
+		<!-- default layers -->
+		
+		
+		
+		<fx:XML source="assets/xml/defaultPathLayer.xml" id="defaultPathLayer"/>
+		<fx:XML source="assets/xml/defaultTextLayer.xml" id="defaultTextLayer"/>
+		<fx:XML source="assets/xml/defaultGroupLayer.xml" id="defaultGroupLayer"/>
+		<fx:XML source="assets/xml/defaultRectLayer.xml" id="defaultRectLayer"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.candymandesign.flash.validators.XMLValidator;
+			import com.lorentz.SVG.*;
+			import com.ludens.magicbox.model.LayerFactory;
+			import com.ludens.magicbox.model.layer.PathLayer;
+			import com.ludens.magicbox.model.variable.Variable;
+			import com.ludens.magicbox.parser.*;
+			import com.ludens.magicbox.parser.tokens.*;
+			import com.ludens.utils.Debug;
+			
+			import mx.events.FlexEvent;
+			
+			// padding around drawing
+			[Bindable] public var scalePadding:Number = 30;
+			
+			
+			private var SVGPreview:SVGRenderer;
+			
+			/**
+			 * language processing objects
+			 */
+			private var _context:ParserContext;
+			private var _parser:LanguageParser = new LanguageParser();
+			
+			/**
+			 * add a variable to the processing context.
+			 * 
+			 */
+			public function addVariable(name:String, type:String, value:String ):void {
+				var variableData:XML = new XML('<variable name="' + name + '" type="' + type + '" value="' + value + '"/>');
+				template.variables.addItem( Variable.fromXML( variableData ) );
+					
+			}
+			
+			/**
+			 * set the value of a specific variable
+			 */
+			public function setVariable(name:String, value:String):void {
+				
+				for each( var item:Variable in template.variables ){
+					if( item.name == name){
+						item.value = value;
+					}
+				}
+				
+			}
+			
+			/**
+			 * add a layer with specific XML in the right format
+			 */
+			public function addLayerXML( xml:XML, pos:int = 0 ):void {
+				//layersDescriptor.addItemAt( xml, pos );
+				template.layers.addItemAt( LayerFactory.createFromXML( xml ), pos );
+				
+			}
+			
+			/** remove a layer with a specific id
+			 */
+			public function removeLayerByID( id:String ):void {
+				
+				
+				for( var i:int = 0; i < template.layers.length; i++){
+					if( template.layers[i].id == id){
+						template.layers.removeItemAt(i);
+					}
+				}
+			}
+			
+			public function removeLayerXML(xml:XML):void {
+				for( var i:int = 0; i < template.layers.length; i++){
+					if( template.layers[i] == xml){
+						template.layers.removeItemAt(i);
+					}
+				}
+			}
+			
+			/**
+			 * update a layer with new drawing data. This layer needs to be a
+			 * path layer
+			 */
+			public function updateLayerData( id:String, data:String ):void{
+				PathLayer(template.layers.get( id )).d = data;
+			}
+			
+			/**
+			 * add text layer
+			 */
+			public function addTextLayer( text:String, fontSize:Number, x:Number, y:Number):void {
+				var textLayerXML:XML = defaultTextLayer.copy();
+				textLayerXML.@mb__text = text;
+				textLayerXML.@mb_x = x;
+				textLayerXML.@mb_y = y;
+				textLayerXML.@mb_fontSize = fontSize;
+				
+				addLayerXML(textLayerXML, 0);
+				
+			}
+			
+			/**
+			 * load a magic box template file
+			 * the host app should take care it's loaded from the server / generated
+			 * and that it's the right format
+			 */
+			public function loadTemplate( xml:XML ):void {
+				
+				// get the variables and the layers in
+				variablesXML = xml.variables.variable.copy();
+				layersXML = xml.layers.children().copy();
+				if(xml.hasOwnProperty("info"))
+					infoXML = XML(xml.info).copy(); 
+			}
+			
+			
+			/**
+			 * the function that lets you update the screen
+			 */
+			public function update():void {
+				updateDrawingData();
+			}
+			
+			/**
+			 * get the template xml
+			 */
+			public function getXML():String {
+				return template.getXML();
+			}
+			
+			
+			
+			/**********************************
+			 * 
+			 * PRIVATE FUNCTIONS
+			 * 
+			 **********************************/
+			
+			private function updateDrawingData():void {
+				
+				
+				template.prepareContext();
+				
+				var maxBounds:Rectangle = new Rectangle( Number.POSITIVE_INFINITY,Number.POSITIVE_INFINITY,0,0 );
+				
+				// refresh the SVG preview if it already exists
+				if( SVGPreview && this.rawChildren.contains( SVGPreview ) )
+					this.rawChildren.removeChild( SVGPreview );
+				
+				
+				// do all kinds of fancy stuff if the SVG string is actually valid
+				if( XMLValidator.isValid( SVGString ) ) {
+					
+					var SVGString:String = template.getSVG();
+					
+					
+					var SVGXML:XML = new XML( SVGString );
+					
+					// feed the parsed data to the SVGRenderer class and actually draw it onto the screen
+					try {
+
+						SVGPreview = new SVGRenderer( SVGXML, true );
+						
+						this.rawChildren.addChild( SVGPreview );
+					} catch (e:Error ){
+						Debug.print("[MagicBox] error creating SVG renderer, string invalid", this);
+						return;
+					}
+					
+					// neatly scale the SVG to fit the screen
+					_doFitToScreen();
+					
+				}
+				
+			}
+			
+				
+			
+			/** neatly fit the drawing to the screen
+			 */
+			private function _doFitToScreen():void {
+				
+				// padding around drawing
+				
+				
+				
+				// get scale ratio in both directions of SVGPreview compared to width of container
+				var scaleXRatio:Number = (this.width - 2*scalePadding) 	/ SVGPreview.width;
+				var scaleYRatio:Number = (this.height - 2*scalePadding) / SVGPreview.height;
+				
+				// scale ratio minimal is 1, and the minimum of both directions
+				var scaleRatio:Number = Math.min( 1, Math.min( scaleXRatio, scaleYRatio ) );
+				
+				// scale preview with scale ratio
+				SVGPreview.scaleX = SVGPreview.scaleY = scaleRatio;
+				
+				
+				var SVGBounds:Rectangle = SVGPreview.getBounds( this );
+				
+				
+				var outerOffsetX:Number = (width - SVGBounds.width) / 2;
+				var outerOffsetY:Number = (height - SVGBounds.height) / 2;
+				
+				var innerOffsetX:Number = -SVGBounds.x;
+				var innerOffsetY:Number = -SVGBounds.y;
+				
+				SVGPreview.x = outerOffsetX + innerOffsetX;
+				SVGPreview.y = outerOffsetY + innerOffsetY;		
+				
+			}
+			
+
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				// initialize the parser
+				//_parser = new LanguageParser();
+				//_parser = new LanguageParser;
+			}
+			
+			public function get svgData():String {
+				
+				return template.getSVG( );
+			}
+
+		]]>
+	</fx:Script>
+</mx:Canvas>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layeroptions:LayerOptionsBase xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							   xmlns:s="library://ns.adobe.com/flex/spark" 
+							   xmlns:mx="library://ns.adobe.com/flex/mx" 
+							   xmlns:layeroptions="com.ludens.PackageHandler.view.layeroptions.*" 
+							   height="44">
+	<fx:Declarations>
+		<fx:XML source="/assets/xml/defaultFonts.xml" id="defaultFonts"/>
+		<s:XMLListCollection id="defaultFontList" source="{defaultFonts.font}"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.lorentz.SVG.SVGColor;
+			import com.ludens.magicbox.model.layer.TextLayer;
+			
+			protected function setFontFamily( item:*):void {
+				
+				//trace("Font family name: " + XML(item).@name);
+				data.fontFamily = XML(item).@name;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:DropDownList
+		id="fontFamilyCB"
+		y="2" 
+		dataProvider="{defaultFontList}" labelField="@name"
+		change="{setFontFamily(fontFamilyCB.selectedItem); doChange() }"
+		height="16" styleName="smallText"  left="59" right="0"/>
+	
+	<mx:Label x="0" y="1" text="font" paddingLeft="22" width="55" textAlign="right"/>
+	
+	<mx:NumericStepper id="fontSizeStepper"
+					   value="{ Number(data.fontSize) }"
+					   change="{ data.fontSize = String(fontSizeStepper.value); doChange() }" 
+					   styleName="smallText" 
+					   width="40" height="16" minimum="0" y="26" maximum="127" right="0"
+					   toolTip="font size"/>
+	<mx:Button 
+		x="59" y="23" width="20" 
+		id="btnAlignLeft" 
+		selected="{data.textAnchor == 'start'}"
+		change="{ data.textAnchor = 'start'; doChange()}"
+		toggle="true"
+		height="20"
+		icon="@Embed('assets/images/text_align_left.png')"
+		toolTip="align left"/>
+	<mx:Button 
+		x="82" y="23" width="20" 
+		id="btnAlignMiddle" 
+		selected="{data.textAnchor == 'middle'}"
+		change="{ data.textAnchor = 'middle'; doChange()}"
+		toggle="true"
+		height="20"
+		icon="@Embed('assets/images/text_align_center.png')"
+		toolTip="align middle"/>
+	<mx:Button 
+		x="105" y="23" width="20" 
+		id="btnAlignRight" 
+		selected="{data.textAnchor == 'end'}"
+		change="{ data.textAnchor = 'end'; doChange()}"
+		toggle="true"
+		
+		height="20"
+		icon="@Embed('assets/images/text_align_right.png')"
+		toolTip="align right"/>
+	
+	<mx:ColorPicker id="fillColorPicker2" 
+					selectedColor="{ SVGColor.parseToInt( String(data.fill).toLowerCase() ) }" 
+					width="16" height="16" 
+					change="{ data.fill = SVGColor.flashToSVG(fillColorPicker2.selectedColor); doChange() }"  x="150" y="26"
+					toolTip="fill color"/>
+</layeroptions:LayerOptionsBase>

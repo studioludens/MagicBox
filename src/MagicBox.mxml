@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+	
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+	
+	backgroundColor="0x333333" layout="absolute"			
+	
+	xmlns:flash.filters="flash.filters.*" 
+	xmlns:package="com.ludens.PackageHandler.packages.*"
+	xmlns:local="*" 
+	xmlns:windows="com.ludens.PackageHandler.view.windows.*"
+	xmlns:SnapBoxer="com.ludens.PackageHandler.view.SnapBoxer.*" 
+	xmlns:containers="net.brandonmeyer.containers.*" 
+	xmlns:view="com.ludens.PackageHandler.view.*" 
+	xmlns:controls="com.ludens.components.controls.*"
+	
+	creationComplete="onCC()" addedToStage="onATS(event)"
+	xmlns:model="com.ludens.magicbox.model.*" 
+	xmlns:controllers="com.ludens.controllers.*" 
+	xmlns:labeltextinput="com.ludens.PackageHandler.view.labeltextinput.*" 
+	xmlns:components="com.ludens.components.*" 
+	xmlns:layout="com.ludens.zoompan.layout.*" 
+	xmlns:view1="com.ludens.zoompan.view.*" 
+	xmlns:debugger="com.demonsters.debugger.*" 
+	xmlns:layer="com.ludens.magicbox.model.layer.*" 
+	xmlns:variable="com.ludens.magicbox.model.variable.*" 
+	xmlns:sparkTree="com.sparkTree.*"
+	click="application1_clickHandler(event)">
+	
+	<!--
+	STYLING
+	-->
+	<!-- custom styling -->
+	<fx:Style source="assets/css/font.css" />
+	<fx:Style source="assets/css/Styles.css" />
+	
+	
+	<fx:Style>  
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		
+		global {
+		color: #BBBBBB;
+		fontFamily: 'Myriad Pro', 'Myriad', 'Arial';
+		fontSize: 14;
+		}
+		
+		mx|Button {
+		
+		textRollOverColor: #fff;
+		}
+		
+		.mainInterface {
+			
+			
+		}
+		
+	</fx:Style>
+	
+	
+	<!-- application states -->
+	<mx:states>
+		<s:State name="editor" />
+		<s:State name="viewer" />
+	</mx:states>
+	
+	
+	
+	<!-- default variables -->
+	
+	<fx:Declarations>
+		
+		<s:Parallel id="flipEffect" startDelay="250" effectEnd="controller.swapEffectEndHandler(event)">
+			<s:Sequence>
+				<mx:AnimateProperty property="z" fromValue="0" toValue="700" duration="{flipDuration/2}" />
+				<mx:AnimateProperty property="z" fromValue="700" toValue="0" duration="{flipDuration/2}" />
+			</s:Sequence>
+			<mx:AnimateProperty property="rotationY" fromValue="0" toValue="180" duration="{flipDuration}" />
+		
+			
+		</s:Parallel>
+		
+		
+		
+		<controllers:UndoRedoController id="undoRedo" />
+		
+		<!-- data sets for variables and layers -->
+		
+	</fx:Declarations>
+	
+	<!-- DATA MODEL -->
+	<fx:Declarations>
+
+		<model:Template id="template"/>
+		
+		<!--<mx:XMLListCollection source="{template.variablesXML}" id="variablesDescriptor" />-->
+		<!--<mx:XMLListCollection source="{template.layersXML}" id="layersDescriptor" />-->
+		
+		<!--<layer:LayerCollection id="layers" source="{template.layers}"/>-->
+		
+		
+		<!--<mx:XMLListCollection source="{template.info}" id="infoDescriptor" />-->
+		
+		<!--<fx:XMLList xmlns="" id="variablesXML"/>-->
+		
+		<!-- default layers -->
+		
+		<!--<fx:XMLList xmlns="" id="layersXML" />-->
+		
+		<fx:XML source="assets/xml/defaultPathLayer.xml" id="defaultPathLayer"/>
+		<fx:XML source="assets/xml/defaultTextLayer.xml" id="defaultTextLayer"/>
+		<fx:XML source="assets/xml/defaultGroupLayer.xml" id="defaultGroupLayer"/>
+		<fx:XML source="assets/xml/defaultRectLayer.xml" id="defaultRectLayer"/>
+		
+		
+		
+		<!-- VISUAL EFFECTS -->
+		<mx:Fade id="fadeOut" alphaFrom="1.0" alphaTo="0.0" duration="500"/>
+		<mx:Fade id="fadeIn" alphaFrom="0.0" alphaTo="1.0" duration="500"/>
+
+		
+		<mx:DropShadowFilter id="dropShadow" distance="2" angle="90" quality="3" blurX="5" blurY="5" alpha="0.5" />
+		<mx:DropShadowFilter id="heavyDropShadow" distance="0" quality="3" blurY="5" alpha="0.8" />
+		<mx:DropShadowFilter id="cardDropShadow" distance="0" quality="3" blurX="100" blurY="100" alpha="0.5" />
+		
+		<mx:DropShadowFilter id="handDropShadow" distance="0" quality="3" blurX="25" blurY="25" alpha="0.2" knockout="true" />
+		
+		
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.PackageHandler.events.DescriptorEvent;
+			import com.ludens.PackageHandler.svg.LayerTreeDescriptor;
+			import com.ludens.controllers.ApplicationController;
+			import com.ludens.magicbox.model.layer.Layer;
+			import com.ludens.utils.Debug;
+			
+			
+			/**
+			 * Version of MagicBox
+			 */ 
+			[Bindable] public var version:String = "v0.9.41";
+			
+			
+			[Bindable]
+			public var flipDuration:Number = 1000;
+			
+			public var shiftIsPressed:Boolean = false;
+			
+			/**
+			 * the nice hand displayed in the background of the drawing to get some sense of scale
+			 */
+			public var hand:MovieClip;
+			
+			
+			/**
+			 * the object with all the application logic
+			 */
+			[Bindable]
+			public var controller:ApplicationController;
+			
+			/**
+			 * icons
+			 */
+			[Embed (source="assets/images/vector.png")]
+			[Bindable]
+			public var PathIcon:Class;
+			
+			[Embed (source="assets/images/font.png")]
+			[Bindable]
+			public var TextIcon:Class;
+			
+			[Embed (source="assets/images/application.png")]
+			[Bindable]
+			public var GeneralIcon:Class;
+			
+			[Embed (source="assets/images/shape_square.png")]
+			[Bindable]
+			public var RectIcon:Class;
+			
+			[Embed (source="assets/images/shape_group.png")]
+			[Bindable]
+			public var GroupIcon:Class;
+			
+			
+			private function handleIcon(itemObject:Object):Class
+			{
+				return Layer(itemObject).iconClass;
+			}
+			
+			
+			//--------------------------------------------------------------------------
+			//
+			// 	Public methods
+			//
+			//--------------------------------------------------------------------------
+			
+			
+			
+			/**
+			 * Creation complete handler.
+			 * 
+			 * Sets up the event listeners for the menus (in the panels)
+			 */
+			public function onCC():void{			
+				controller = ApplicationController.getInstance();
+				controller.init( this );
+				controller.doCreationComplete();
+			}
+			
+			private function onATS( e:Event ):void {
+				
+				controller.doAddedToStage();
+				
+			}
+
+			/**
+			 * specific interface functions
+			 */
+			[Bindable]
+			private var _selectedIcon:Class = GeneralIcon;
+			
+			
+			public function get selectedIcon():Class {
+				return _selectedIcon;
+			}
+			[Bindable] 
+			public function set selectedIcon(icon:Class):void{
+				_selectedIcon = icon;
+			}
+			
+			protected function application1_clickHandler(event:MouseEvent):void
+			{
+				if( designInfoWindow.visible && !designTitle.hasFocus ){
+					designInfoWindow.visible = false;
+				}
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	
+	<!--
+	User Interface Elements 
+	-->
+	
+	<mx:VBox id="userInterface"   
+		width="100%" height="100%" x="0" y="0" backgroundColor="#555555">
+		
+		<!--<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		
+		
+		<s:Rect width="100%" height="100%">
+			<s:fill>
+				<s:SolidColor color="0x555555"/>
+			</s:fill>
+		</s:Rect>
+		-->
+		
+		<mx:Canvas id="menuBar" filters="{ [heavyDropShadow] }"
+			width="100%" verticalScrollPolicy="off"
+			backgroundColor="0x333333" borderStyle="solid"
+			
+			>
+			
+			
+			
+			<mx:HBox horizontalGap="3" paddingTop="8" paddingBottom="8" paddingLeft="11" left.editor="0">		
+				
+				<!-- BUTTONS -->
+				
+				<mx:Button icon="@Embed(source='assets/images/page_white.png')" width="24" height="24" id="btnLoad0" click="{controller.getNewTemplate()}"
+						    includeIn="editor" width.editor="24" toolTip="new template"/>
+				<mx:Button icon="@Embed(source='assets/images/folder.png')" width.editor="24" height="24" id="btnLoad" label.viewer="open template (.mbt)" labelPlacement="right" click="{controller.loadXMLHandler()}" toolTip="open template"/>
+				
+				<mx:Button icon="@Embed(source='assets/images/folder_picture.png')" includeIn="editor" width.editor="24" height="24" id="btnImport" label="import SVG" labelPlacement="right" click="{controller.showSVGImportWindow()}" toolTip="import elements from an SVG file"/>
+		
+					<mx:Spacer width="5" />
+				
+				<mx:Button icon="@Embed(source='assets/images/disk.png')" height="24" id="btnSave" click="{controller.saveAsXMLHandler()}" label="template"
+						   includeIn="editor"  label.editor="template" textAlign="left" toolTip="save your template" />
+				<mx:Button icon="@Embed(source='assets/images/disk.png')" id="btnSave0" click="{controller.saveAsSVGHandler()}" label.viewer="save as design (.svg)" label.editor="SVG" height="24" textAlign="left" toolTip="export your design as SVG" width.editor="64"/>
+				
+					<mx:Spacer width="5" />
+				
+				<mx:Button icon="@Embed(source='assets/images/printer.png')" click="controller.doPrint()"  height="24"
+						   includeIn="editor"  width="24" toolTip="print"/>
+				
+					
+		
+				<mx:Button icon="@Embed(source='assets/images/arrow_undo.png')" click="controller.undo()" enabled="{ undoRedo.canUndo }" height="24"
+						   includeIn="editor"  width="24" toolTip="undo"/>
+				<mx:Button icon="@Embed(source='assets/images/arrow_redo.png')" click="controller.redo()" enabled="{ undoRedo.canRedo }"  height="24"
+						   includeIn="editor"  width="24" toolTip="redo"/>
+				
+					<mx:Spacer width="25" />
+				
+				
+				
+				
+			</mx:HBox>
+			
+			<!-- HEADER -->
+			
+			<mx:Button id="flipButton" 
+					   icon.viewer="@Embed(source='assets/images/brick.png')" label.viewer="editor" height="24"
+					   icon.editor="@Embed(source='assets/images/eye.png')" label.editor="viewer" labelPlacement="right" 
+					   click="controller.doFlip()" toolTip.editor="view template in viewer" toolTip.viewer="view template in editor" 
+					   y="8" right="160"/>
+			
+			<mx:Canvas height="40" width="128" width.editor="124" right.viewer="0" right.editor="4" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				<mx:Label text="Magic Box" fontSize="20" x="3" y="6" x.editor="0" y.editor="6"/>
+				<mx:Label text="{ version }" width="50" fontSize="10" textAlign="right" x="44" y="23" x.editor="41" y.editor="23"/>
+				<mx:Image source="assets/icons/magic_box_icon_32.png" smoothBitmapContent="true"  x="95" y="5" x.editor="92" y.editor="5"/>
+			</mx:Canvas>
+			
+			<!-- TITLE -->
+			<mx:Canvas  height="40" horizontalCenter="0" width="400">
+				<labeltextinput:LabelTextInput 
+					id="designTitle"
+					click.editor="{designInfoWindow.visible=true;}"
+					text="@{designInfoWindow.title}"
+					editable.viewer="false" 
+					width="100%" y="5" 
+					fontSize="22" 
+					textAlign="center"
+					 />
+			</mx:Canvas>
+				<fx:Script>
+					<![CDATA[
+						import com.ludens.PackageHandler.svg.SVGTreeDescriptor;
+					]]>
+				</fx:Script>
+			
+		</mx:Canvas>
+		
+		
+		<mx:DividedBox id="mainDivider" 
+			direction="horizontal" filters="{[dropShadow]}"
+			 
+			width="100%" height="100%" dividerRelease="controller.resizeHandler(event)"
+			paddingTop="3" paddingBottom="3" paddingLeft="3" paddingRight="3"
+	>
+			
+			<s:Group width="250" includeIn="editor" height="100%">
+				<s:layout>
+					<s:VerticalLayout/>
+				</s:layout>
+				<mx:Panel 
+					width="100%" height="100%"
+					titleIcon="{Layer(layersList.selectedItem).iconClass}" 
+					title="{ layersList.selectedItem.id }"
+					visible="{ (layersList.selectedIndex > -1) }"
+					includeInLayout="{ (layersList.selectedIndex > -1)  }"
+					
+					>
+					<view:LayerOptions id="layerOptions" width="100%" height="100%"
+									   data="{ Layer(layersList.selectedItem) }"
+									   styleName="layerOptions"
+									   variableNames="{template.variableNames}"
+									   requestSave="controller.saveState()" />
+				</mx:Panel>	
+			</s:Group>
+			
+			<s:Group id="editor" width="100%" height="100%"
+					 clipAndEnableScrolling="true" click="{editor.setFocus()}">
+				<s:layout>
+					<layout:ZoomPanLayout animate="true" backgroundElements="{[gridBackground1,gridBackground2]}"/>
+				</s:layout>
+				
+				<!---
+					TODO: put some reference items here
+				-->
+				
+				<!-- grid in mm -->
+				<view1:GridBackground id="gridBackground1" gridLineDistance="283.464567"/>
+				<view1:GridBackground id="gridBackground2" gridLineDistance="28.3464567"/>
+				
+				<!-- origin -->
+				<s:Group id="originNav">
+					<s:Line xFrom="0" xTo="30">
+						<s:stroke>
+							<s:SolidColorStroke color="0xCC0000"/>
+						</s:stroke>
+					</s:Line>
+					<s:Line yFrom="0" yTo="30">
+						<s:stroke>
+							<s:SolidColorStroke color="0x00CC00"/>
+						</s:stroke>
+					</s:Line>
+				</s:Group>
+				
+				<s:SpriteVisualElement id="editorContent"/>
+				
+			</s:Group>
+			
+			<!-- right box with variable panel -->
+			
+			<mx:VDividedBox width="235" minWidth="235" verticalAlign="top" height="100%" horizontalAlign="left" 
+				borderStyle.viewer="solid" borderAlpha.viewer="0.5" backgroundColor.viewer="0x444444">
+	
+					
+				<mx:Panel id="variablesPanel"
+						  width="100%" height="100%" layout="absolute" verticalGap="0"
+						  title="Parameters" titleIcon="@Embed(source='assets/images/box.png')"
+						  horizontalScrollPolicy="off" verticalScrollPolicy="off"
+						  visible.viewer="false" includeInLayout.viewer="false">
+				
+					<view:SmartList
+						dataProvider="{template.variables}" 
+						id="variablesList" borderStyle="none"
+						
+						left="0" top="0" right="0" bottom="30"
+						itemRenderer="com.ludens.PackageHandler.view.itemrenderers.VariableEditorRenderer"
+						dragMoveEnabled="true" dragEnabled="true" dropEnabled="true"
+						change="controller.variablesListChangeHandler(event)" 
+						requestSave="controller.saveState()"/>
+					
+					
+					
+					<mx:Spacer height="10" />
+					
+					<mx:Button icon="@Embed(source='assets/images/add.png')"
+							   label="add parameter" 
+							   height="30" width="100%" 
+							   bottom="0"
+							   click="controller.addButtonClickHandler(event)"
+							   
+							   excludeFrom="viewer"
+							   />
+					
+				</mx:Panel>
+				
+				<mx:HBox
+					width="100%" height="100%"
+					visible.editor="false" includeInLayout.editor="false" 
+					paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" >
+					
+					<view:SmartList
+						dataProvider="{template.variables}" 
+						id="variablesList2" borderStyle="none" selectable="false" 
+						
+						width="100%" height="100%"
+						itemRenderer="com.ludens.PackageHandler.view.itemrenderers.VariableViewerRenderer"
+						dragMoveEnabled="true" dragEnabled="true" dropEnabled="true"
+						change="controller.variablesListChangeHandler(event)" requestSave="controller.saveState()" />
+				
+				</mx:HBox>
+		
+					
+				
+				<mx:Panel id="layersPanel" width="100%" height="100%"
+						  layout="vertical" verticalGap="0" includeIn="editor"
+						  
+						  title="Layers" titleIcon="@Embed(source='assets/images/application_cascade.png')"
+						  horizontalScrollPolicy="off" verticalScrollPolicy="off" >
+					
+					<!--
+					<view:SmartTree
+						id="layersList"
+						
+						dataProvider="{template.layers}"
+						dataDescriptor="{new LayerTreeDescriptor}"
+						itemRenderer="com.ludens.PackageHandler.view.itemrenderers.LayerItemRenderer" 
+						
+						iconFunction="{handleIcon}"
+						indentation="16"
+						borderStyle="none"
+						allowMultipleSelection="true"
+						
+						width="100%" height="100%"
+						
+						dragMoveEnabled="true" 
+						dragEnabled="true" 
+						dropEnabled="true"
+						
+						change="{controller.layerListChangeHandler(event)}"
+						requestSave="controller.saveState()"
+						selectedIndex="0"
+						>
+					</view:SmartTree>
+					-->
+					<sparkTree:Tree
+						id="layersList"
+						
+						dataProvider="{template.layers}"
+						itemRenderer="com.ludens.PackageHandler.view.itemrenderers.LayerTreeItemRenderer" 
+						
+						
+						indentation="16"
+						
+						allowMultipleSelection="true"
+						
+						width="100%" height="100%"
+						
+						dragMoveEnabled="true" 
+						dragEnabled="true" 
+						dropEnabled="true"
+						
+						change="{controller.layerListChangeHandler(event)}"
+						
+						selectedIndex="0"
+						>
+						<sparkTree:layout>
+							<s:VerticalLayout gap="0"/>
+						</sparkTree:layout>
+					</sparkTree:Tree>
+					
+					<mx:Spacer height="10" />
+					
+					<mx:HBox width="100%" horizontalGap="2">
+						<mx:Image source="@Embed(source='assets/images/add.png')" 
+								  width="24" height="24" 
+								  toolTip="Add an item to the layers"
+								  horizontalAlign="center" verticalAlign="middle" scaleContent="false"/>
+						<mx:Button icon="@Embed(source='assets/images/vector.png')"
+								   height="24" width="24" 
+								   click="controller.addLayerWithType('path')"  toolTip="add Path layer"/>
+						<mx:Button icon="@Embed(source='assets/images/font.png')"
+								   height="24" width="24" 
+								   click="controller.addLayerWithType('text')"  toolTip="add Text layer"/>
+						<mx:Button icon="@Embed(source='assets/images/shape_group.png')"
+								   height="24" width="24" 
+								   click="controller.addLayerWithType('group')"  toolTip="add Group layer"/>
+						<mx:Button icon="@Embed(source='assets/images/shape_square.png')"
+								   height="24" width="24" 
+								   click="controller.addLayerWithType('rect')"  toolTip="add Rectangle layer"/>
+						<mx:Button icon="@Embed(source='assets/images/shape_square.png')"
+								   height="24" width="24" 
+								   click="controller.addLayerWithType('boolean')"  toolTip="add Boolean layer"/>
+						<mx:Spacer width="20"/>
+						<mx:Button icon="@Embed(source='assets/images/shape_ungroup.png')"
+								   height="24" width="24" 
+								   click="controller.duplicateLayer()"  toolTip="duplicate layer"/>
+					</mx:HBox>
+					
+				</mx:Panel>	
+				
+				<mx:Panel id="consolePanel" width="100%" height="50"
+						  layout="vertical" verticalGap="0" includeIn="editor"
+						  
+						  title="Error Console" titleIcon="@Embed(source='assets/images/monitor.png')"
+						  horizontalScrollPolicy="off" verticalScrollPolicy="off" >
+					<view:DebugConsole width="100%" height="100%" styleName="codeTextStyle"/>
+				</mx:Panel>
+				
+			</mx:VDividedBox>
+				
+	
+		</mx:DividedBox>
+			
+		
+		
+	</mx:VBox>
+	
+	<mx:Canvas id="flipBox" width="0" height="0" clipContent="false" horizontalCenter="0" verticalCenter="0" />
+	
+	<view:DesignInfoWindow 
+		includeInLayout="false" 
+		id="designInfoWindow" 
+		horizontalCenter="0" 
+		top="{menuBar.height}"
+		
+		visible="false"
+		
+		filters="{ [heavyDropShadow] }"
+		showEffect="{fadeIn}" hideEffect="{fadeOut}"
+		
+		designData="@{template.info}"
+		generator="{this.version}"
+		
+		change="controller.updateDescriptors()"
+		
+		/>
+	<view:SVGImportWindow
+		 includeInLayout="false"
+		 id="svgImportWindow"
+		 horizontalCenter="0"
+		 verticalCenter="0"
+		 left="30" top="{menuBar.height}" right="30" bottom="30"
+		 visible="false"
+		 change="controller.doImportSVG()"
+		 
+		 filters="{ [heavyDropShadow] }"
+		 showEffect="{fadeIn}" hideEffect="{fadeOut}"
+		 
+	/>
+	
+	<!--<debugger:MonsterDebuggerFlex id="md" width="300" height="300"/>-->
+		   
+</mx:Application>
+

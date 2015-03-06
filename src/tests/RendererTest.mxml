@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   minWidth="955" minHeight="600" 
+			   xmlns:magicbox="com.ludens.magicbox.*">
+	<fx:Declarations>
+		<fx:XML source="assets/xml/defaultPathLayer.xml" id="defaultPathLayer"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.utils.Debug;
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				
+				// load an existing template
+				loadXMLHandler();
+				
+			}
+
+
+			protected function widthSlider_changeHandler(event:Event):void
+			{
+				// set the value of a specific variable
+				display.setVariable( "width", String(widthSlider.value) );
+				
+				// redraw
+				display.update();
+			}
+
+
+			protected function heightSlider_changeHandler(event:Event):void
+			{
+				// set the value of a specific variable
+				display.setVariable( "height", String(heightSlider.value) );
+				
+				// redraw
+				display.update();
+			}
+			
+			private function exampleNewItem():void {
+				
+				// set a value directly, in this case the stroke color of the drawing
+				defaultPathLayer.@mb_stroke = "#000000";
+				
+				
+				// add the layer xml to the display
+				display.addLayerXML( defaultPathLayer );
+				
+				// add a variable "width", which is a slider and set it's value to 100
+				display.addVariable( "width", "slider", "100" );
+				display.addVariable( "height", "slider", "70" );
+				display.addVariable( "thickness", "slider", "6" );
+				
+				// update the display. You have to do this manually after every update so
+				// you can control the updating frequency
+				display.update();
+			}
+			
+			private function exampleText():void {
+				display.addTextLayer("A",20,0,0);
+				display.addTextLayer("B",30,100,0);
+				display.addTextLayer("C",40,200,0);
+				display.addTextLayer("D",50,300,0);
+				display.update();
+			}
+			
+			
+			/******** XML File Loading Example *************/
+			
+			public var loadFileRef:FileReference;
+			
+			public function loadXMLHandler():void{
+				
+				loadFileRef = new FileReference();
+				
+				// add event listeners for file reference 
+				loadFileRef.addEventListener( Event.SELECT, fileSelectHandler, false, 0, true );
+				loadFileRef.addEventListener( Event.COMPLETE, fileLoadCompleteHandler, false, 0, true );
+				
+				// file filter
+				var filter:FileFilter = new FileFilter( "magic box templates - .mbt", "*.mbt" );
+				
+				loadFileRef.browse( [ filter ] );
+				
+				/*
+				var loadFile:File = new File();
+				loadFile.browseForOpen("Open Magic Box File",[new FileFilter("Magic Box Templates", "*.mbt")]);
+				loadFile.addEventListener(Event.SELECT, fileOpenLoadXML);
+				*/
+			}
+			
+			
+			private function fileSelectHandler( e:Event ):void {
+				
+				if( !loadFileRef )
+					return;
+				
+				loadFileRef.load();
+			}
+			
+			
+			
+			private function fileLoadCompleteHandler( e:Event ):void {
+				
+				Debug.print("file loaded!", this );
+				
+				
+				var xml:XML = new XML(loadFileRef.data);
+				// load the template
+				display.loadTemplate( xml );
+				
+				// and update the display
+				display.update();
+				
+			}
+			
+
+		]]>
+	</fx:Script>
+	
+	<!-- the renderer of a magic box design -->
+	<magicbox:MagicBoxDisplay 
+		id="display"
+		left="10" top="68" bottom="10" right="10" >
+	</magicbox:MagicBoxDisplay>
+	
+	<s:Label x="9" y="17" text="Magic Box Renderer Test" fontSize="22"/>
+	<s:Button x="280" y="17" label="Render" click="button1_clickHandler(event)"/>
+	<s:HSlider x="369" y="11" width="152" id="widthSlider" minimum="0" maximum="100" value="40" change="widthSlider_changeHandler(event)"/>
+	<s:HSlider x="368" y="27" width="152" id="heightSlider" minimum="0" maximum="100" value="40" change="heightSlider_changeHandler(event)"/>
+	<s:Button x="584" y="17" label="Add text" click="exampleText()"/>
+	
+	
+</s:Application>

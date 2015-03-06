@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layeroptions:LayerOptionsBase xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							   xmlns:s="library://ns.adobe.com/flex/spark" 
+							   xmlns:mx="library://ns.adobe.com/flex/mx" 
+							   xmlns:layeroptions="com.ludens.PackageHandler.view.layeroptions.*" 
+							   width="348" 
+							   height="26">
+	<fx:Declarations>
+		<fx:Number id="subSelectionAlpha">{fillStyleCB.selected ? 1 : .2}</fx:Number>
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.lorentz.SVG.SVGColor;
+			import com.ludens.magicbox.model.layer.Layer;
+			import com.ludens.utils.BooleanUtil;
+			
+		]]>
+	</fx:Script>
+	
+	<mx:CheckBox id="fillStyleCB" 
+				 selected="{ data.showFill }"
+				 change="{ data.showFill = fillStyleCB.selected; doChange() }" 
+				 label="fill" labelPlacement="right" fontWeight="bold" x="0" y="1" 
+				 toolTip="if checked the fill will be shown"
+				 
+				 />
+	<mx:ColorPicker id="fillColorPicker" 
+					selectedColor="{ SVGColor.parseToInt( String(data.fill).toLowerCase() ) }" 
+					width="16" height="16" 
+					change="{ data.fill = SVGColor.flashToSVG(fillColorPicker.selectedColor); doChange() }"  x="59" y="4"
+					toolTip="fill color"
+					
+					enabled="{data.showFill}"
+					alpha="{subSelectionAlpha}"/>
+	<s:HSlider id="fillAlphaSlider" 
+			   value="{ Number(Layer(data).fillOpacity) }"
+			   change="{ data.fillOpacity = String(fillAlphaSlider.value); doChange() }"
+			   minimum="0" maximum="1" y="5.5" snapInterval="0" liveDragging="true" 
+			   right="45" left="80"
+			   toolTip="fill opacity"
+			   
+			   enabled="{data.showFill}"
+			   alpha="{subSelectionAlpha}"/>
+	
+</layeroptions:LayerOptionsBase>

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   xmlns:magicbox="com.ludens.magicbox.*" 
+			   xmlns:view="com.ludens.PackageHandler.view.*"
+			   creationComplete="application1_creationCompleteHandler(event)"
+			   resize="application1_resizeHandler(event)"
+			   addedToStage="application1_addedToStageHandler(event)">
+	<fx:Declarations>
+		<s:Fade id="variablesFadeIn" duration="300" alphaFrom="0" alphaTo="1"/>
+		<s:Fade id="variablesFadeOut" duration="300" alphaFrom="1" alphaTo="0"/>
+		<fx:uint id="backgroundColor">0xFFFFFF</fx:uint>
+	</fx:Declarations>
+	<!-- a very basic viewer for magic box templates -->
+	
+	<s:Rect id="backgroundRect" left="0" right="0" top="0" bottom="0"  >
+		<s:fill>
+			<s:SolidColor color="{backgroundColor}" />
+		</s:fill>
+	</s:Rect>
+	
+	<magicbox:MagicBoxDisplay id="display" left="0" right="0" top="0" bottom="0" scalePadding="1"/>
+	
+	
+	
+	<s:Group id="variables" right="10" top="10" width="201" 
+			 showEffect="variablesFadeIn"
+			 hideEffect="variablesFadeOut"
+			  >
+		
+		<s:Rect left="0" right="0" top="0" bottom="0" radiusX="10" radiusY="10">
+			<s:fill>
+				<s:SolidColor alpha=".6" color="0xFFFFFF"/>
+			</s:fill>
+		</s:Rect>
+		
+		<s:Label text="Parameters" x="13" y="7" fontSize="16" visible="{display.template.variables.length>0}"/>
+		<view:SmartList
+			dataProvider="{display.template.variables}" 
+			id="variablesList" borderStyle="none" selectable="false" 
+			
+			
+			itemRenderer="com.ludens.PackageHandler.view.itemrenderers.VariableSmallViewerRenderer"
+			dragMoveEnabled="true" dragEnabled="true" dropEnabled="true"
+			change="variablesListChangeHandler(event)" right="0" top="20" left="10" height="120"/>
+	</s:Group>
+	
+	<s:Group width="300" height="72" 
+			 id="noDesignLoadedView" 
+			 horizontalCenter="0" verticalCenter="0"
+			  visible="false"
+			   click="loadXMLHandler()">
+		<s:Rect left="0" right="0" top="0" bottom="0" radiusX="20" radiusY="20">
+			<s:fill>
+				<s:SolidColor color="0x333333"/>
+			</s:fill>
+		</s:Rect>
+		<s:Label text="no design loaded..." color="0xFFFFFF" horizontalCenter="0" verticalCenter="0" fontFamily="Arial" fontSize="25"/>
+	</s:Group>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.utils.Debug;
+			
+			import mx.controls.Alert;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.events.ResizeEvent;
+			
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				
+				
+				// set the variables from the loader
+				
+				
+			 
+				
+			}
+			
+			protected function application1_addedToStageHandler(event:Event):void
+			{
+				// background color
+				if( FlexGlobals.topLevelApplication.parameters.background ){
+					backgroundColor = uint(FlexGlobals.topLevelApplication.parameters.background);
+				}
+				
+				// template
+				var templateURL:String = "";
+				if( FlexGlobals.topLevelApplication.parameters.template ){
+					templateURL = FlexGlobals.topLevelApplication.parameters.template;
+					// load the template
+					loadTemplate( templateURL);
+				} else {
+					// if no template url is specified, load from disk
+					//loadXMLHandler();
+					noDesignLoadedView.visible = true;
+				}
+				
+				// add listeners for when the mouse leaves the stage
+				systemManager.stage.addEventListener( Event.MOUSE_LEAVE, stageMouseOutHandler);
+				systemManager.stage.addEventListener( MouseEvent.MOUSE_MOVE, stageMouseMoveHandler );
+			}
+			
+			public function variablesListChangeHandler(e:Event):void{
+				display.update();
+			}
+			
+			protected function application1_resizeHandler(event:ResizeEvent):void
+			{
+				if(display) display.update();
+			}
+			
+			
+			
+			private var _mouseOnStage:Boolean = true;
+			
+			protected function stageMouseMoveHandler( e:MouseEvent ):void {
+				if(variables && !variables.visible) variables.visible = true;
+				_mouseOnStage = true;
+			}
+			
+			protected function stageMouseOutHandler( e:Event ):void {
+				if(variables && variables.visible) variables.visible = false;
+				trace("Mouse moved out of stage!");
+				_mouseOnStage = false;
+			}
+			
+			/**
+			 * Loads the template
+			 */
+			private function loadTemplate( templateURL:String ):void {
+				
+				var request	:URLRequest = new URLRequest( templateURL );
+				var loader	:URLLoader 	= new URLLoader( );
+				loader.addEventListener( Event.COMPLETE, templateLoadCompleteHandler );
+				loader.addEventListener( IOErrorEvent.IO_ERROR, templateLoadIOError);
+				loader.load( request );
+			}
+			
+			/**
+			 * Handles the complete event of the template loading
+			 */
+			private function templateLoadCompleteHandler( e:Event ):void {
+				
+				var loader:URLLoader = e.currentTarget as URLLoader;
+				
+				// Give loaded content to the XML constructor (casting it does not work!)
+				var templateXML:XML = new XML( loader.data );
+				
+				// load template into preview component
+				display.loadTemplate( templateXML );
+				display.update();
+			}
+			
+			private function templateLoadIOError( e:IOErrorEvent ):void {
+				// something went wrong, show an alert
+				Alert.show( "The file you tried to load could not be found.", "Load Error", Alert.OK, this);
+			}
+			
+			
+			/******** XML File Loading Example *************/
+			
+			public var loadFileRef:FileReference;
+			
+			public function loadXMLHandler():void{
+				
+				loadFileRef = new FileReference();
+				
+				// add event listeners for file reference 
+				loadFileRef.addEventListener( Event.SELECT, fileSelectHandler, false, 0, true );
+				loadFileRef.addEventListener( Event.COMPLETE, fileLoadCompleteHandler, false, 0, true );
+				
+				// file filter
+				var filter:FileFilter = new FileFilter( "magic box templates - .mbt", "*.mbt" );
+				
+				loadFileRef.browse( [ filter ] );
+				
+				/*
+				var loadFile:File = new File();
+				loadFile.browseForOpen("Open Magic Box File",[new FileFilter("Magic Box Templates", "*.mbt")]);
+				loadFile.addEventListener(Event.SELECT, fileOpenLoadXML);
+				*/
+			}
+			
+			
+			private function fileSelectHandler( e:Event ):void {
+				
+				if( !loadFileRef )
+					return;
+				
+				loadFileRef.load();
+			}
+			
+			
+			
+			private function fileLoadCompleteHandler( e:Event ):void {
+				
+				Debug.print("file loaded!", this );
+				
+				noDesignLoadedView.visible = false;
+				
+				var xml:XML = new XML(loadFileRef.data);
+				// load the template
+				display.loadTemplate( xml );
+				
+				// and update the display
+				display.update();
+				
+			}
+
+
+
+			
+
+		]]>
+	</fx:Script>
+</s:Application>

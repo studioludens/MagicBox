@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (c) 2009 Random Fractals, Inc. (www.randomfractals.com)
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+-->
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:stroke="com.randomfractals.paint.strokes.*"	 
+	direction="horizontal" 
+	width="60" horizontalGap="0" 
+	horizontalScrollPolicy="off" 
+	verticalScrollPolicy="off" 
+	horizontalAlign="left">
+
+	<mx:Metadata>
+		[Event(name="lineCapChange", type="com.randomfractals.paint.events.StrokeEvent")]  		
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import com.randomfractals.paint.events.StrokeEvent;
+			import com.randomfractals.paint.strokes.LineCap;
+			
+			[Bindable]
+			public var selectedColor:uint = 0x66CCFF;
+												
+			private var _lineCap:String = LineCap.ROUND;
+			
+			[Bindable]
+			public function get selectedLineCap():String
+			{
+				return _lineCap;
+			}
+			
+			public function set selectedLineCap(capStyle:String):void
+			{
+				switch (capStyle)
+				{
+					case LineCap.SQUARE:
+						_lineCap = LineCap.SQUARE;					
+						squareCapButton.selected = true;
+						roundCapButton.selected = false;
+						break;
+					default: // round
+						_lineCap = LineCap.ROUND;					
+						roundCapButton.selected = true;
+						squareCapButton.selected = false;
+						break;						
+				}				
+				this.dispatchEvent(new StrokeEvent(StrokeEvent.LINE_CAP_CHANGE));				
+			}
+		]]>
+	</mx:Script>
+	
+	<stroke:LineButton id="roundCapButton" 
+		lineCap="round" selectedColor="{this.selectedColor}" 
+		toolTip="Round" width="25" 
+		click="{selectedLineCap = LineCap.ROUND;}" />
+		
+	<stroke:LineButton id="squareCapButton" 
+		lineCap="square" selectedColor="{this.selectedColor}" 
+		toolTip="Square" width="10" 
+		click="{selectedLineCap = LineCap.SQUARE;}" />
+	
+</mx:Box>

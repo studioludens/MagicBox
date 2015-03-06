@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layeroptions:LayerOptionsBase xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							   xmlns:s="library://ns.adobe.com/flex/spark" 
+							   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:layeroptions="com.ludens.PackageHandler.view.layeroptions.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.magicbox.model.layer.PathLayer;
+			import com.ludens.magicbox.model.layer.TextLayer;
+			import com.ludens.utils.BooleanUtil;
+		]]>
+	</fx:Script>
+	
+	<mx:CheckBox id="dataLabel" 
+				 selected="{ !data.staticText }"
+				 change="{ data.staticText = (dataLabel.selected ? false : true); doChange() }" 
+				 label="text" labelPlacement="right" fontWeight="bold"
+				 toolTip="if checked the data will not be parsed. Use to increase drawing speed on static elements"/>
+	<s:TextArea
+		id="txtText"
+		change="{ data.text = txtText.text; doChange() }" 
+		text="{ data.text }"
+		left="0" right="0" top="24" bottom="0"
+		styleName="textareaTextStyle"/>
+</layeroptions:LayerOptionsBase>

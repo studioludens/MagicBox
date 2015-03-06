@@ -1,0 +1,24 @@
+<rect 
+				
+				id="defaultRect"
+				
+				mb_x="0"
+				mb_y="0"
+				mb_width="100"
+				mb_height="100"
+				
+				mb_stroke="#DDDDDD"
+				mb_strokeWidth="1"
+				mb_strokeOpacity="1"
+				mb_fill="#888888"
+				mb_fillOpacity="0.5"
+				mb_visibility="visible"
+				
+				mb__showStroke="true"
+				mb__showFill="false"
+				mb__showTransform="false"
+				
+				>
+				<transforms></transforms>
+				
+</rect>

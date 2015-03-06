@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+	
+	addedToStage="onATS(event)" 
+	creationComplete="onCC(event)"
+	xmlns:text="com.ludens.components.text.*" 
+	xmlns:view="com.ludens.PackageHandler.view.*"
+
+	xmlns:layeroptions="com.ludens.PackageHandler.view.layeroptions.*">
+	
+	<!-- 
+		this is the interface renderer for the layer data. The XML structure it creates is an equivalent to the SVG
+		path object. Attributes in the XML structure are prefixed with mb_ and CamelCased (to be compatible with the 
+		flex E4X parser). if an attribute is prefixed with mb__, it means that it does not have an equivalent
+		in the SVG format and therefore should be ignored by any parser that transforms the Magic Box language format
+		into an SVG file.
+		
+		the class that handles data created with this interface element is the Template.as class
+	-->
+	
+	<fx:Declarations>
+		
+	</fx:Declarations>
+	<fx:Metadata>
+		[Event(name="requestSave", type="com.ludens.PackageHandler.events.StateEvent")]
+	</fx:Metadata>
+	
+
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+
+
+	<layeroptions:LayerOptionsPosition 
+			id="positionOptions"
+			data="{data}" 
+			width="100%"
+			change="doChange()"/>
+	
+
+	<layeroptions:LayerOptionsSize 
+		id="sizeOptions"
+		data="{data}" 
+		width="100%"
+		change="doChange()" />
+
+	<layeroptions:LayerOptionsText 
+			id="textOptions"
+			
+			data="{data}" 
+			width="100%"
+			change="doChange()" />
+
+		
+	<layeroptions:LayerOptionsStroke 
+		id="strokeOptions"
+		data="{data}" 
+		width="100%"
+		change="doChange()" />
+
+	<layeroptions:LayerOptionsFill
+		id="fillOptions"
+		data="{data}" 
+		width="100%"
+		change="doChange()" />
+
+
+	<!-- transformations -->
+	<layeroptions:LayerOptionsTransforms 
+		id="transformsOptions"
+		data="{data}" 
+		width="100%"
+		change="doChange()" />
+		
+	
+	<layeroptions:LayerOptionsData 
+		id="dataOptions"
+		data="{data}" 
+		change="doChange()"
+		variableNames="{variableNames}"
+		functionNames="{functionNames}"
+		width="100%"
+		height="100%"/>
+	
+	<layeroptions:LayerOptionsTextEditor 
+		id="textEditorOptions"
+		data="{data}" 
+		change="doChange()"
+		width="100%"
+		height="100%"/>
+	
+	<layeroptions:LayerOptionsBoolean
+			id="booleanOptions"
+			data="{data}"
+			change="doChange()"
+			width="100%"
+			/>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.PackageHandler.events.DescriptorEvent;
+			import com.ludens.PackageHandler.events.StateEvent;
+			import com.ludens.PackageHandler.view.layeroptions.LayerDisplaySettings;
+			import com.ludens.controllers.ParserController;
+			import com.ludens.magicbox.model.LayerFactory;
+			import com.ludens.magicbox.model.layer.Layer;
+			import com.ludens.utils.Debug;
+			
+			import mx.core.IVisualElement;
+			
+			
+			[Bindable] public var variableNames:Array;
+			[Bindable] public var functionNames:Array;
+			
+			
+			private var dataChangedSinceMouseDown:Boolean = false;
+			
+			[Bindable] private var displayOptions:LayerDisplaySettings;
+			
+			//[Bindable] private var layerData:Layer;
+			
+			/**
+			 * data object
+			 */
+			private var _data:Layer;
+			
+			
+			public function get data():Layer {
+				return _data;
+			}
+			[Bindable]
+			public function set data( value:Layer ):void {
+				
+				if( _data != value ){
+					_data = value;
+					
+					displayOptions = _data.displayDefaults;
+					updateDisplayOptions();
+				}
+				
+
+				//layerData = LayerFactory.createFromXML( XML(_data) );
+				
+				//displayOptions = layerData.displayDefaults;
+				
+
+				
+			}
+			
+			
+			
+			private function onATS( e:Event ):void {
+				
+				stage.addEventListener( MouseEvent.MOUSE_UP, stageMouseUpHandler );
+				
+				// get the function names
+				// (only once)
+				functionNames = ParserController.getInstance().functionNames;
+			}
+			
+			private function onCC( e:Event ):void {
+
+			}
+			
+			
+			private function stageMouseUpHandler( e:MouseEvent ):void {
+				
+				if( dataChangedSinceMouseDown ) {
+					
+					dataChangedSinceMouseDown = false;
+					
+					doSaveRequest();
+				}
+			}
+			
+			private function doSaveRequest():void {
+				
+				//trace( "[LayerOptions] doSaveRequest" );
+				
+				var event:StateEvent = new StateEvent( StateEvent.REQUEST_SAVE, true );
+				dispatchEvent( event );
+			}
+	
+			
+			public function doChange():void {
+				
+				// check if data properties are selected
+				
+				
+				dataChangedSinceMouseDown = true;
+				
+				
+				// fire a change event
+    			var evt:Event = new Event(Event.CHANGE);
+    			dispatchEvent(evt);		
+			}
+			
+
+			private function updateDisplayOptions():void
+			{
+				Debug.print( "updating display options" , this );
+				// remove items from the displaylist that don't have the right display options
+				
+				if( displayOptions.showPosition ) 		addElement( positionOptions );
+				else									removeElement( positionOptions );
+				
+				if( displayOptions.showSize ) 			addElement( sizeOptions );
+				else									removeElement( sizeOptions );
+				
+				if( displayOptions.showText ) 			addElement( textOptions );
+				else									removeElement( textOptions );
+				
+				if( displayOptions.showStroke ) 		addElement( strokeOptions );
+				else									removeElement( strokeOptions );
+				
+				if( displayOptions.showFill ) 			addElement( fillOptions );
+				else									removeElement( fillOptions );
+				
+				if( displayOptions.showTransforms ) 	addElement( transformsOptions );
+				else									removeElement( transformsOptions );
+				
+				if( displayOptions.showData ) 			addElement( dataOptions );
+				else									removeElement( dataOptions );
+				
+				if( displayOptions.showTextEditor ) 	addElement( textEditorOptions );
+				else									removeElement( textEditorOptions );
+				
+				if( displayOptions.showBoolean ) 		addElement( booleanOptions );
+				else									removeElement( booleanOptions );
+				
+				
+				
+			}
+			
+			override public function removeElement(element:IVisualElement):IVisualElement
+			{
+				// this can generate an error. for now just ignore it. it means the element does
+				// not exist. this is logical, because we might have removed it beforehand
+				try { return super.removeElement(element); } catch( e:Error ) { return null;}
+				
+				return null;
+			}
+			
+			
+			
+		]]>
+	</fx:Script>
+	
+</s:Group>

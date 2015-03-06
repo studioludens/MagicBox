@@ -1,0 +1,28 @@
+<boolean 
+				
+				id="defaultBoolean"
+				
+				mb_x="0"
+				mb_y="0"
+				
+				
+				
+				mb_stroke="#DDDDDD"
+				mb_strokeWidth="1"
+				mb_strokeOpacity="1"
+				mb_fill="#888888"
+				mb_fillOpacity="0.5"
+				mb_visibility="visible"
+				
+				mb__showStroke="true"
+				mb__showFill="true"
+				mb__showTransform="false"
+				
+				mb__booleanType="union"
+				
+				
+				
+				>
+				<transforms></transforms>
+				
+</boolean>

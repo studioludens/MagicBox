@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			    creationComplete="application1_creationCompleteHandler(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.magicbox.parser.drawingcommands.DCGroup;
+			import com.ludens.magicbox.parser.drawingcommands.DrawingCommand;
+			import com.ludens.utils.Debug;
+			
+			import mx.events.FlexEvent;
+
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				var dcg:DCGroup = new DCGroup();
+				
+				Debug.print( "--- INITIAL VALUES ---", this );
+				Debug.print("dcg [ " + dcg.startPoint.toString() + " " + dcg.endPoint.toString() + "] [" + dcg.toString() + "]", this );
+				
+				dcg.line( 10, 100 );
+				dcg.arc( 1, 1, 0, 0, 0, 10, 100 );
+				
+				// TODO: Assert
+				
+				Debug.print( "--- ADDING STUFF ---", this );
+				Debug.print("dcg [ " + dcg.startPoint.toString() + " " + dcg.endPoint.toString() + "] [" + dcg.toString() + "]", this );
+				
+				dcg.move( 10, 10, true );
+				dcg.line( 1, 1 );
+				
+				Debug.print( "--- WITH ABSOLUTE COMMANDS ---", this );
+				Debug.print("dcg [ " + dcg.startPoint.toString() + " " + dcg.endPoint.toString() + "] [" + dcg.toString() + "]", this );
+				
+				Debug.print( "--- LAST ITEM ---", this );
+				Debug.print("dcg.last [ " + dcg.last.startPoint.toString() + " " + dcg.last.endPoint.toString() + "] [" + dcg.last.toString() + "]", this );
+				
+				// POLYGON
+				Debug.print( "--- CREATE A POLYGON ---", this );
+				Debug.print("dcg.poly [ " + dcg.poly.toString() + "] [" + dcg.last.toString() + "]", this );
+				
+			}
+
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+</s:Application>

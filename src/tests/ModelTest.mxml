@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			    creationComplete="application1_creationCompleteHandler(event)">
+	<fx:Declarations>
+		<fx:XML source="assets/xml/defaultPathLayer.xml" id="defaultPathLayer"/>
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.magicbox.model.layer.Layer;
+			import com.ludens.magicbox.model.LayerFactory;
+			import com.ludens.magicbox.parser.LanguageParser;
+			import com.ludens.magicbox.parser.ParserContext;
+			
+			import mx.events.FlexEvent;
+			
+
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				var pc:ParserContext = new ParserContext();
+				
+				pc["width"] = 33;
+				pc["height"] = 60;
+				
+				
+				
+				//var layer:* = DefaultGroupLayer.data as XML;
+				
+				// TODO Auto-generated method stub
+				var x:Layer = new Layer(defaultPathLayer);
+				/*
+				var parsedSVG:XML = x.getSVG( pc, new LanguageParser);
+				trace( "XML: " + parsedSVG.toXMLString() );
+				
+				var newitem:Layer = LayerFactory.createFromType("path");
+				trace( "XML: " + newitem.getSVG( pc, new LanguageParser ).toXMLString());
+				*/
+			}
+
+		]]>
+	</fx:Script>
+</s:Application>

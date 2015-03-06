@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" creationComplete="onCC(event)" addedToStage="onATS(event)"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off" xmlns:lti="com.ludens.PackageHandler.view.labeltextinput.*"
+	
+	backgroundColor="0x888888" backgroundAlpha="0.01">
+	<mx:HBox width="100%" horizontalGap="5" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		
+		
+		
+		<mx:Button 
+			id="visibleButton" 
+			icon="@Embed(source='../../../../../assets/images/eye_disabled.png')"
+			upIcon="@Embed(source='../../../../../assets/images/eye_disabled.png')"
+			overIcon="@Embed(source='../../../../../assets/images/eye_disabled.png')"
+			downIcon="@Embed(source='../../../../../assets/images/eye_disabled.png')"
+			selectedUpIcon="@Embed(source='../../../../../assets/images/eye.png')"
+			selectedOverIcon="@Embed(source='../../../../../assets/images/eye.png')"
+			selectedDownIcon="@Embed(source='../../../../../assets/images/eye.png')"
+			width="24" height="24" 
+			change="visibleHandler(event)" 
+			toggle="true"
+			selected="{ XML(data).@mb_visibility == 'visible' }"/>
+		<mx:Image 
+			width="24" height="24" 
+			source="@Embed(source='../../../../../assets/images/font.png')" 
+			scaleContent="false" 
+			verticalAlign="middle" horizontalAlign="center"
+			visible="{String(XML(data).name()) == 'text'}"
+			includeInLayout="{String(XML(data).name()) == 'text'}"/>
+		<mx:Image 
+			width="24" height="24" 
+			source="@Embed(source='../../../../../assets/images/vector.png')" 
+			scaleContent="false" 
+			verticalAlign="middle" horizontalAlign="center"
+			visible="{String(XML(data).name()) == 'path'}"
+			includeInLayout="{String(XML(data).name()) == 'path'}"/>
+		
+		<lti:LabelTextInput width="100%" 
+						id="varName" 
+						text="{XML(data).@id}" 
+						changeValue="nameChangedHandler(event)"/>		
+			
+					
+		<mx:HBox id="metaControls" height="100%" paddingRight="5" verticalAlign="middle" horizontalGap="3" visible="false" includeInLayout="false">
+		
+			
+			<mx:Button id="btnDeleteVariable"
+				width="16" height="16" 
+				styleName="noStyleButton" 
+				buttonMode="true" useHandCursor="true" mouseChildren="false" 
+				click="deleteHandler(event)"
+				
+				toolTip="delete variable"
+				
+				upSkin="@Embed(source='../../../../../assets/images/delete_grey.png')"
+				overSkin="@Embed(source='../../../../../assets/images/delete.png')"
+				downSkin="@Embed(source='../../../../../assets/images/delete_dark.png')" />
+				
+		</mx:HBox>
+					
+		
+	</mx:HBox>
+	<mx:Script>
+		<![CDATA[
+			import com.ludens.PackageHandler.events.DescriptorEvent;
+			import com.ludens.PackageHandler.events.StateEvent;
+			import com.ludens.utils.BooleanUtil;
+			import com.ludens.utils.Debug;
+			
+			import mx.events.ListEvent;
+			import mx.events.PropertyChangeEvent;
+			
+			
+			private var dataChangedSinceMouseDown:Boolean = false;
+			
+			
+			
+			private function onCC( e:Event ):void {
+							
+				addEventListener( MouseEvent.ROLL_OVER, rollOverHandler );
+				addEventListener( MouseEvent.ROLL_OUT, rollOutHandler );
+			}
+			
+			private function onATS( e:Event ):void {
+				
+				stage.addEventListener( MouseEvent.MOUSE_UP, stageMouseUpHandler );
+			}
+			
+			
+			private function rollOverHandler( e:MouseEvent ):void {
+				metaControls.visible 		 = true;
+				metaControls.includeInLayout = true;
+			}
+			private function rollOutHandler( e:MouseEvent ):void {	
+				metaControls.visible 		 = false;
+				metaControls.includeInLayout = false;
+			}
+			
+			
+			
+			
+			private function stageMouseUpHandler( e:MouseEvent ):void {
+				
+				if( dataChangedSinceMouseDown ) {
+					
+					dataChangedSinceMouseDown = false;
+				
+					doSaveRequest();
+				}
+			}
+			
+			
+			
+			private function doSaveRequest():void {
+				
+				Debug.print( "doSaveRequest" , this);
+				
+				var event:StateEvent = new StateEvent( StateEvent.REQUEST_SAVE, true );
+				dispatchEvent( event );
+			}
+			
+			
+			private function nameChangedHandler(e:Event):void {
+				
+				XML(data).@id = varName.text;
+				
+				//var evt:PropertyChangeEvent = PropertyChangeEvent.createUpdateEvent(data, "@value", _oldValue, varValue.value);
+				var evt:ListEvent = new ListEvent(ListEvent.CHANGE, true);
+				//evt.bubbles = true;
+				dispatchEvent(evt);
+			}
+			
+			private function visibleHandler(e:Event):void {
+				
+				doSaveRequest();
+				
+				XML(data).@mb_visibility = visibleButton.selected ? 'visible' : 'hidden';
+				
+				//var evt:PropertyChangeEvent = PropertyChangeEvent.createUpdateEvent(data, "@value", _oldValue, varValue.value);
+				var evt:ListEvent = new ListEvent(ListEvent.CHANGE, true);
+				//evt.bubbles = true;
+				dispatchEvent(evt);
+				
+			}
+			
+			private function deleteHandler(e:MouseEvent):void {
+				
+				doSaveRequest();
+				
+				// fire a delete event
+				
+				var de:DescriptorEvent = new DescriptorEvent(DescriptorEvent.DELETE, true);
+				
+				de.descriptor = data as XML;
+				dispatchEvent(de);
+			}
+			
+		
+		]]>
+	</mx:Script>
+</mx:Canvas>

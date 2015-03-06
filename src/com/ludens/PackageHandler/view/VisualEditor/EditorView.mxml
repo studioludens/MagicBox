@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
+	<fx:Declarations>
+		
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.PackageHandler.view.VisualEditor.itemrenderers.SimpleTokenRenderer;
+			import com.ludens.PackageHandler.view.VisualEditor.tokenrenderers.AssignmentTokenRenderer;
+			import com.ludens.PackageHandler.view.VisualEditor.tokenrenderers.DrawingTokenRenderer;
+			import com.ludens.magicbox.parser.tokens.AssignmentToken;
+			import com.ludens.magicbox.parser.tokens.BooleanToken;
+			import com.ludens.magicbox.parser.tokens.GroupToken;
+			import com.ludens.magicbox.parser.tokens.IToken;
+			
+			import mx.collections.ArrayCollection;
+			
+			private var _data:GroupToken;
+			
+			[Bindable] public var tokens:ArrayCollection;
+
+			[Bindable]
+			public function get data():GroupToken
+			{
+				return _data;
+			}
+
+			public function set data(value:GroupToken):void
+			{
+				if( _data != value ){
+					
+					_data = value;
+					// get the array collection
+					tokens = _data.tokens as ArrayCollection;
+					
+				}
+				
+			}
+			
+			private function list_itemRendererFunc(item:Object):ClassFactory {
+				var cla:Class = SimpleTokenRenderer;
+				
+				
+				switch( item.type ){
+					
+					case "AssignmentToken":
+						cla = AssignmentTokenRenderer;
+						break;
+					case "BooleanToken":
+						break;
+					case "DrawingToken":
+						cla = DrawingTokenRenderer;
+						break;
+					case "EachToken":
+						break;
+					case "ExpressionToken":
+						break;
+					case "FunctionToken":
+						break;
+					case "GroupToken":
+						break;
+					case "IfToken":
+						break;
+					case "ListItemToken":
+						break;
+					case "ListToken":
+						break;
+					case "ListVariableToken":
+						break;
+					case "RepeatToken":
+						break;
+					case "TextToken":
+						break;
+					case "ValueToken":
+						break;
+					case "VariableToken":
+						break;
+				}
+				return new ClassFactory(cla);
+			}
+
+		]]>
+	</fx:Script>
+	<s:List 
+		id="editor"
+		itemRendererFunction="list_itemRendererFunc"
+		dataProvider="{tokens}"
+		width="100%" height="100%">
+		<s:layout>
+			<s:HorizontalLayout/>
+		</s:layout>
+	</s:List>
+</s:Group>

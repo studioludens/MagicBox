@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600"
+			   creationComplete="application1_creationCompleteHandler(event)" xmlns:VisualEditor="com.ludens.PackageHandler.view.VisualEditor.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.magicbox.parser.tokens.*;
+			import com.ludens.utils.Debug;
+			
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			public var tokens:GroupToken;
+			
+			
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				
+				
+				var val100:ValueToken = new ValueToken( "100" );
+				var val200:ValueToken = new ValueToken( "200" );
+				var val300:ValueToken = new ValueToken( "300" );
+				
+				
+				tokens = new GroupToken( [ new DrawingToken("h", [val100] ) ] );
+				//tokens.push(  );
+				
+				Debug.print(tokens.toString(), this );
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<VisualEditor:EditorView
+		id="editor"
+		data="{tokens}"
+		left="10" top="10" bottom="10" right="10"
+		/>
+</s:Application>

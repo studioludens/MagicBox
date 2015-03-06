@@ -1,0 +1,25 @@
+<path 
+	id="defaultLayer"
+	
+	mb_x="width/2"
+	mb_y="0"
+	
+	mb_d="h width v height h -width v -height"
+	mb_stroke="#DDDDDD"
+	mb_strokeWidth="1"
+	mb_strokeOpacity="1"
+	mb_fill="#888888"
+	mb_fillOpacity="0.5"
+	mb_visibility="visible"
+	
+	mb__showStroke="true"
+	mb__showFill="true"
+	mb__showTransform="false"
+	mb__staticData="false"
+	
+	
+	
+	>
+	<transforms></transforms>
+				
+</path>

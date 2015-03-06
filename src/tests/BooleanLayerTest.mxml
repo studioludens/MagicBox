@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="500" minHeight="300"
+			   creationComplete="application1_creationCompleteHandler(event)">
+	
+	<fx:Declarations>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.magicbox.model.LayerFactory;
+			import com.ludens.magicbox.model.layer.BooleanLayer;
+			import com.ludens.magicbox.model.layer.PathLayer;
+			import com.ludens.magicbox.model.layer.RectLayer;
+			import com.ludens.utils.Debug;
+			
+			import mx.events.FlexEvent;
+			
+			private var _layer1Data:String;
+
+			[Bindable]
+			public function get layer1Data():String
+			{
+				return _layer1Data;
+			}
+
+			public function set layer1Data(value:String):void
+			{
+				_layer1Data = value;
+				l1.d = layer1Data;
+				updateData();
+			}
+
+			
+			private var _layer2Data:String;
+
+			[Bindable]
+			public function get layer2Data():String
+			{
+				return _layer2Data;
+			}
+
+			public function set layer2Data(value:String):void
+			{
+				_layer2Data = value;
+				l2.d = _layer2Data;
+				updateData();
+			}
+			
+
+			
+			[Bindable]
+			public var booleanData:String;
+			
+			[Bindable]
+			public var layer1Poly:String;
+			
+			[Bindable]
+			public var layer2Poly:String;
+			
+			
+			public var l1:PathLayer;
+			public var l2:PathLayer;
+			public var b1:BooleanLayer;
+			
+			
+			public function testBooleanLayer():void {
+				
+				// create two rectangle layers
+				
+				l1 = LayerFactory.createFromType( "path" ) as PathLayer;
+				l2 = LayerFactory.createFromType( "path" ) as PathLayer;
+				
+				l1.x = "10";
+				l1.y = "11";
+				
+				l1.d = "";
+				l2.d = "";
+				
+				
+				Debug.print("-- SETTING INITIAL VALUES --");
+				//Debug.print("l1     = " + l1.poly.toString(), this);
+				Debug.print("l1.svg = " + l1.getSVG().toXMLString(), this);
+				
+				// create boolean layer
+				
+				b1 = LayerFactory.createFromType("boolean") as BooleanLayer;
+				b1.children.addItem( l1 );
+				b1.children.addItem( l2 );
+				
+				//var l3:RectLayer = new RectLayer();
+				
+				
+				
+				// try out if we get the right polygons
+				
+				
+			}
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+				testBooleanLayer();
+			}
+			
+			private function updateData():void
+			{
+				// TODO Auto Generated method stub
+				Debug.print("-- BOOLEAN LAYER --");
+				//Debug.print("b1     = " + b1.poly.toString(), this);
+				Debug.print("b1.svg = " + b1.getSVG().toXMLString(), this);
+				
+				booleanData = describePoly(b1.poly);
+				layer1Poly = describePoly(l1.poly);
+				layer2Poly = describePoly(l2.poly);
+				
+			}
+			
+			private function describePoly( poly:Array ):String {
+				
+				if( !poly ) return "";
+				
+				var ret:String = "polys(" + poly.length + "):\n";
+				// make a nice string representation of the polygon
+				for( var i:int = 0; i < poly.length; i++ ){
+					var p:Array = poly[i];
+					
+					ret += "	poly(" + p.length + "):\n";
+					for( var j:int = 0; j < p.length; j++ ){
+						ret += "		[ " + p[j][0] + ", " + p[j][1] + " ]\n";
+					}
+				}
+				
+				return ret;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:Group left="10" right="10" top="10" bottom="10">
+		<s:layout>
+			<s:HorizontalLayout/>
+		</s:layout>
+		
+		<s:Group width="33%" height="100%">
+			<s:layout>
+				<s:VerticalLayout/>
+			</s:layout>
+			<s:TextArea id="item1Data" text="@{layer1Data}" width="100%" height="50%"/>
+			<s:TextArea id="item1Poly" text="{layer1Poly}" width="100%" height="50%"/>
+		</s:Group>
+		
+		<s:Group width="33%" height="100%">
+			<s:layout>
+				<s:VerticalLayout/>
+			</s:layout>
+			<s:TextArea id="item2Data" text="@{layer2Data}" width="100%" height="50%"/>
+			<s:TextArea id="item2Poly" text="{layer2Poly}" width="100%" height="50%"/>
+		</s:Group>
+		
+		<s:Group width="33%" height="100%">
+			<s:layout>
+				<s:VerticalLayout/>
+			</s:layout>
+			<s:TextArea id="booleanDataText" text="{booleanData}" width="100%" height="50%"/>
+		</s:Group>
+		
+		
+		
+		
+	</s:Group>
+</s:Application>

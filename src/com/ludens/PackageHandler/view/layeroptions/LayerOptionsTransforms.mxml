@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layeroptions:LayerOptionsBase xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							   xmlns:s="library://ns.adobe.com/flex/spark" 
+							   xmlns:mx="library://ns.adobe.com/flex/mx" 
+							   xmlns:layeroptions="com.ludens.PackageHandler.view.layeroptions.*" 
+							   
+							   xmlns:view="com.ludens.PackageHandler.view.*" 
+							   xmlns:transform="com.ludens.magicbox.model.layer.transform.*"
+							   
+							   height="{transformBox.height}"
+							   addedToStage="layeroptionsbase1_addedToStageHandler(event)" >
+
+	<fx:Script>
+		<![CDATA[
+			import com.lorentz.SVG.SVGColor;
+			import com.ludens.PackageHandler.events.DescriptorEvent;
+			import com.ludens.magicbox.model.LayerFactory;
+			import com.ludens.magicbox.model.layer.Layer;
+			import com.ludens.magicbox.model.layer.transform.LayerTransform;
+			import com.ludens.utils.BooleanUtil;
+			
+			protected function layeroptionsbase1_addedToStageHandler(event:Event):void
+			{
+				transformList.addEventListener( DescriptorEvent.DELETE, removeTransformDescriptorHandler);
+			}
+			
+			/**
+			 * Handles the removal of the selection variable item
+			 */
+			public function removeTransformDescriptorHandler(e:DescriptorEvent):void {
+				
+				// remove item
+				//transformationsDescriptor.removeItemAt(transformList.selectedIndex);
+				transforms.removeItem( transformList.selectedItem );
+				
+				// update drawing
+				doChange();
+			}
+			
+			
+			protected function addTransform_clickHandler(event:MouseEvent):void
+			{
+				// add a transformation to the list
+				
+				//var transform:XML = new XML( '<transform type="translate" mb_x="0" mb_y="0" mb_angle="0" mb_cx="0" mb_cy="0" mb_sx="1" mb_sy="1"/>' );
+				
+				transforms.addItemAt( LayerFactory.createFromType("transform"),0 );
+				//transformationsDescriptor.addItemAt( transform, 0);
+				
+				// show the transformations
+				data.showTransform = true;
+				
+				// fire a change event
+				var evt:Event = new Event(Event.CHANGE);
+				dispatchEvent(evt);	
+				
+			}
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<!--<s:XMLListCollection source="{data.transforms.transform}" id="transformationsDescriptor" />-->
+		<transform:LayerTransformCollection id="transforms" source="{data.transforms.source}"/>
+	</fx:Declarations>
+	
+	<mx:VBox width="100%" id="transformBox">
+		
+		
+		<mx:Canvas width="100%">
+			<mx:CheckBox id="transformCB" 
+						 selected="{ data.showTransform }"
+						 change="{ data.showTransform = transformCB.selected; doChange() }" 
+						 label="transform" labelPlacement="right" fontWeight="bold" x="0" y="2" />
+			<mx:Button id="addTransform"
+					   icon="@Embed(source='assets/images/add.png')"
+					   height="24" width="24" 
+					   click="addTransform_clickHandler(event)" y="0" right="0"/>
+		</mx:Canvas>
+		
+		
+		<view:SmartList id="transformList"
+						dataProvider="{transforms}"
+						itemRenderer="com.ludens.PackageHandler.view.itemrenderers.TransformEditorRenderer"
+						visible="{ data.showTransform }"
+						includeInLayout="{ data.showTransform }"
+						borderStyle="none"
+						width="100%" height="{transforms.length*30}"
+						
+						dragMoveEnabled="true" dragEnabled="true" dropEnabled="true"
+						change="{ transformList.rowCount = transformList.dataProvider.length; doChange() }"/>
+	</mx:VBox>
+</layeroptions:LayerOptionsBase>

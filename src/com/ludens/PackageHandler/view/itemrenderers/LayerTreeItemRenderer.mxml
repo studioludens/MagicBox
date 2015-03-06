@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sparkTree:TreeItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+							xmlns:s="library://ns.adobe.com/flex/spark" 
+							xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:sparkTree="com.sparkTree.*"
+							xmlns:lti="com.ludens.PackageHandler.view.labeltextinput.*"
+							dataChange="mxtreeitemrenderer1_dataChangeHandler(event)"
+							creationComplete="onCC(event)"
+							addedToStage="onATS(event)"
+							width="100%"
+							
+							>
+	<fx:Declarations>
+		
+	</fx:Declarations>
+	
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		
+		.deleteButton {
+			
+		}
+	</fx:Style>
+	
+	<sparkTree:states>
+		<s:State name="normal" />            
+		<s:State name="hovered" />
+		<s:State name="selected" />
+	</sparkTree:states>
+		
+	
+	<s:HGroup 
+		left="0" right="0" top="0" bottom="0" 
+		verticalAlign="middle" 
+		
+		dragEnter="dragEnterHandler(event)" dragExit="dragExitHandler(event)" dragDrop="dragDropHandler(event)">
+		<mx:Button 
+			id="visibleButton" 
+			icon="@Embed(source='../../../../../assets/images/eye_disabled.png')"
+			upIcon="@Embed(source='../../../../../assets/images/eye_disabled.png')"
+			overIcon="@Embed(source='../../../../../assets/images/eye_disabled.png')"
+			downIcon="@Embed(source='../../../../../assets/images/eye_disabled.png')"
+			selectedUpIcon="@Embed(source='../../../../../assets/images/eye.png')"
+			selectedOverIcon="@Embed(source='../../../../../assets/images/eye.png')"
+			selectedDownIcon="@Embed(source='../../../../../assets/images/eye.png')"
+			width="16" height="16"
+			styleName="noStyleButton" 
+			change="visibleHandler(event)" 
+			toggle="true"
+			selected="{ Layer(data).visibility == 'visible' }"/>
+		
+		<s:Rect id="indentationSpacer" width="{this.indentation}" percentHeight="100" alpha="0">
+			
+		</s:Rect>
+		
+		<sparkTree:DefaultDisclosureButton visible="{disclosureIconVisible}" 
+									  click="{toggle();}" currentState="{isOpen ? 'open' : 'closed'}"/>
+		
+		
+		<s:BitmapImage source="{Layer(data).iconClass}" />
+		
+		<lti:LabelTextInput width="100%" 
+							id="varName" 
+							height="20"
+							fontSize="12"
+							paddingTop="0" paddingBottom="0"
+							text="{Layer(data).id}" 
+							changeValue="{Layer(data).id = varName.text; nameChangedHandler(event)}"/>	
+		
+		<!--<s:Label id="labelField" text="{title}" paddingTop="2" fontWeight="{_isIDTitle ? 'bold' : 'normal' }"/>-->
+		
+		<mx:HBox id="metaControls" height="100%" paddingRight="5" verticalAlign="middle" horizontalGap="3" visible="false" includeInLayout="false">
+			
+			
+			<mx:Button id="btnDeleteVariable"
+					   width="16" height="16" 
+					   styleName="noStyleButton" 
+					   buttonMode="true" useHandCursor="true" mouseChildren="false" 
+					   click="deleteHandler(event)"
+					   
+					   toolTip="delete variable"
+					   
+					   upSkin="@Embed(source='../../../../../assets/images/delete_grey.png')"
+					   overSkin="@Embed(source='../../../../../assets/images/delete.png')"
+					   downSkin="@Embed(source='../../../../../assets/images/delete_dark.png')" />
+			
+		</mx:HBox>
+		
+	</s:HGroup>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.PackageHandler.events.DescriptorEvent;
+			import com.ludens.PackageHandler.events.StateEvent;
+			import com.ludens.magicbox.model.layer.GroupLayer;
+			import com.ludens.magicbox.model.layer.Layer;
+			import com.ludens.utils.Debug;
+			
+			import mx.events.DragEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.events.TreeEvent;
+			import mx.managers.DragManager;
+			
+			import spark.events.IndexChangeEvent;
+			
+			
+			private var dataChangedSinceMouseDown:Boolean = false;
+			
+			/**
+			 * is the title an ID?
+			 */
+			[Bindable]
+			private var _isIDTitle:Boolean = false;
+			
+			private var _title:String;
+			
+			[Bindable]
+			public function get title():String {
+				// check if the object has an id. if not, return a text string describing the object
+				return _title;
+			}
+			
+			public function set title(value:String):void {
+				_title = value;
+			}
+			
+			protected function mxtreeitemrenderer1_dataChangeHandler(event:FlexEvent):void
+			{
+				// set the title of the node
+				title = getTitle( Layer(data) );
+				
+			}
+			
+			public function getTitle( layer:Layer ):String {
+				
+				if( !layer) return "";
+				
+				if( layer.id && String(layer.id).length > 0 ){
+					_isIDTitle = true;
+					return layer.id;
+				} else {
+					_isIDTitle = false;
+				}
+				
+				if ( layer.objectType == 'text'){
+					// return text content
+					return 'text (' + String(layer.text) + ')';
+				} else if( layer.objectType == 'g'){
+					// return group
+					return 'group';
+				} else if( layer.objectType == 'rect'){
+					return 'rectangle';
+				} 
+				else {
+					if(layer.objectType
+						&& layer.objectType.length > 0) return layer.objectType;
+					else									   return String(layer);
+				}						
+			}
+			
+			
+			
+			
+			
+			
+			private function onCC( e:Event ):void {
+				
+				addEventListener( MouseEvent.ROLL_OVER, rollOverHandler );
+				addEventListener( MouseEvent.ROLL_OUT, rollOutHandler );
+			}
+			
+			private function onATS( e:Event ):void {
+				
+				stage.addEventListener( MouseEvent.MOUSE_UP, stageMouseUpHandler );
+			}
+			
+			
+			private function rollOverHandler( e:MouseEvent ):void {
+				metaControls.visible 		 = true;
+				metaControls.includeInLayout = true;
+				currentState = "hovered";
+			}
+			private function rollOutHandler( e:MouseEvent ):void {	
+				metaControls.visible 		 = false;
+				metaControls.includeInLayout = false;
+				currentState = "normal";
+			}
+			
+			
+			
+			
+			private function stageMouseUpHandler( e:MouseEvent ):void {
+				
+				if( dataChangedSinceMouseDown ) {
+					
+					dataChangedSinceMouseDown = false;
+					
+					doSaveRequest();
+				}
+			}
+			
+			
+			
+			
+			
+			
+			private function doSaveRequest():void {
+				
+				Debug.print( "doSaveRequest" , this);
+				
+				var event:StateEvent = new StateEvent( StateEvent.REQUEST_SAVE, true );
+				dispatchEvent( event );
+				
+				
+			}
+			
+			private function doUpdateRequest():void {
+				
+				//var evt:ListEvent = new ListEvent(ListEvent.CHANGE, true);
+				var evt:IndexChangeEvent = new IndexChangeEvent( IndexChangeEvent.CHANGE );
+				dispatchEvent(evt);
+			}
+			
+			private function nameChangedHandler(e:Event):void {
+				
+				doSaveRequest();
+				doUpdateRequest();
+				
+			}
+			
+			
+			
+			private function visibleHandler(e:Event):void {
+				
+				doSaveRequest();
+				
+				Layer(data).visibility = visibleButton.selected ? 'visible' : 'hidden';
+				
+				doUpdateRequest();
+				
+			}
+			
+			private function deleteHandler(e:MouseEvent):void {
+				
+				doSaveRequest();
+				
+				// fire a delete event
+				
+				var de:DescriptorEvent = new DescriptorEvent(DescriptorEvent.DELETE, true);
+				
+				de.descriptor = data as XML;
+				dispatchEvent(de);
+			}
+			
+			
+			protected function dragEnterHandler(event:DragEvent):void
+			{
+				if( data is GroupLayer ) DragManager.acceptDragDrop(this);
+				currentState = "hovered";
+				
+				Debug.print( "dragEnter id=" + data.id, this );
+				
+			}
+			
+			protected function dragExitHandler(event:DragEvent):void
+			{
+				currentState = "normal";
+				
+				Debug.print( "dragExit id=" + data.id, this );
+				
+			}
+			
+			protected function dragDropHandler(event:DragEvent):void
+			{
+				var draggedItem:Object = event.draggedItem;
+				
+				Debug.print("adding item to Layer id = " + Layer(data).id, this );
+				//Layer(data).children.addItem( 
+				
+			}
+			
+		]]>
+	</fx:Script>
+</sparkTree:TreeItemRenderer>

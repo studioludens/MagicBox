@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (c) 2009 Random Fractals, Inc. (www.randomfractals.com)
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+-->
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:degrafa="http://www.degrafa.com/2007"	 
+	xmlns:stroke="com.randomfractals.paint.strokes.*"				
+	width="100%" height="50" 
+	horizontalAlign="left" 
+	verticalAlign="middle" 
+	creationComplete="initStroke();">
+	
+	<mx:Metadata>
+		[Event(name="strokeChange", type="com.randomfractals.paint.events.StrokeEvent")]  		
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			
+		
+			import mx.events.ColorPickerEvent;
+			import mx.events.SliderEvent;
+			
+			import com.degrafa.core.IGraphicsStroke;
+			import com.degrafa.geometry.Path;
+			import com.degrafa.paint.SolidStroke;
+
+			import com.randomfractals.paint.events.StrokeEvent;
+			import com.randomfractals.paint.strokes.*;
+
+			[Bindable]			
+			public var stroke:IGraphicsStroke;
+						
+			[Bindable]
+			private var _strokeAlpha:Number = 1.0;
+			
+			[Bindable]			
+			private var _strokeColor:uint = 0x66CCFF;
+						
+			[Bindable]
+			private var _strokeWeight:uint = 10;
+			
+			[Bindable]
+			private var _lineCap:String = LineCap.ROUND;
+			
+			[Bindable]
+			private var _lineJoin:String = LineJoin.MITER;
+			
+			private function initStroke():void
+			{
+     		lineCaps.roundCapButton.selected = true;
+     		lineJoins.miterJoinButton.selected = true;		     		
+				createNewStroke();
+			}
+						
+			private function onStrokeColorChange(event:ColorPickerEvent):void
+			{
+				this._strokeColor = event.color;
+				createNewStroke();
+			}
+
+			private function onStrokeAlphaChange(event:SliderEvent):void
+			{
+				this._strokeAlpha = event.value;
+				createNewStroke();
+			}
+						
+			private function onStrokeWidthChange(event:SliderEvent):void
+			{
+				this._strokeWeight = event.value;
+				createNewStroke();
+			}
+
+			private function onStrokeLineChange(event:StrokeEvent):void
+			{
+				this._lineCap = lineCaps.selectedLineCap;
+				this._lineJoin = lineJoins.selectedLineJoin;
+				lineJoins.lineCap = this._lineCap;
+				createNewStroke();
+			}
+						
+			private function createNewStroke():void
+			{
+				this._strokeWeight = this.strokeWeightSlider.value;				
+				this.stroke = new SolidStroke(this._strokeColor, this._strokeAlpha, this._strokeWeight);				
+				this.stroke.caps = this._lineCap;
+				this.stroke.joints = this._lineJoin;	
+				this.dispatchEvent(new StrokeEvent(StrokeEvent.STROKE_CHANGE));																
+			}
+						
+		]]>
+	</mx:Script>
+	
+	<degrafa:GeometryComposition id="strokeComposition" graphicsTarget="{[strokeCanvas]}">
+		<degrafa:RoundedRectangle id="strokeRectangle" y="5" 
+			width="80" height="{strokeWeightSlider.value}" cornerRadius="5">
+			<degrafa:fill>             
+      	<degrafa:SolidFill id="strokeFill" color="{this._strokeColor}" alpha="{this._strokeAlpha}"/>         
+      </degrafa:fill>  
+      <degrafa:stroke>
+				<degrafa:SolidStroke id="strokeBorder" color="#8EB3E7" alpha=".25" weight="2" />							      
+      </degrafa:stroke>		  					
+		</degrafa:RoundedRectangle>
+		<!--
+		<degrafa:HorizontalLine x="0" x1="160" >
+      <degrafa:stroke>
+				<degrafa:SolidStroke id="brushStroke" 
+					color="{brushColor}" 
+					alpha="{brushOpacity}" 
+					weight="{brushWidthSlider.value}" 
+					caps="{lineCaps.selectedLineCap}" />							      
+      </degrafa:stroke>		  					
+		</degrafa:HorizontalLine>
+		-->
+	</degrafa:GeometryComposition>
+	
+	<mx:Label text="Stroke:" />
+	<mx:ColorPicker id="strokeColorPicker" 
+		toolTip="Change Stroke Color" 
+		selectedColor="{this._strokeColor}" 
+		change="onStrokeColorChange(event);" />	
+		
+	<mx:VSlider id="strokeAlphaSlider" 
+			x="0" y="5" toolTip="Stroke Opacity" 
+			width="10" height="40"
+			liveDragging="true" 
+			dataTipPrecision="0" 
+			tickOffset="10" 
+			dataTipOffset="2"
+			minimum="0.0" 
+			maximum="1.0" 
+			value="{this._strokeAlpha}" 
+			change="onStrokeAlphaChange(event);" />
+		
+<!--
+	<mx:Button id="minStrokeButton" 
+		width="10" height="10" toolTip="Stroke Width: 1" 
+		click="{strokeWeightSlider.value = strokeWeightSlider.minimum; createNewStroke();}" />
+-->
+	<mx:Canvas id="strokeCanvas" 
+		width="80" height="40" 
+		horizontalScrollPolicy="off" 
+		verticalScrollPolicy="off" 
+		toolTip="Stroke Preview">
+		
+		<mx:HSlider id="strokeWeightSlider" 
+				x="0" y="12" toolTip="Stroke Width" 
+				width="80" height="30"  
+				liveDragging="true" 
+				dataTipPrecision="0" 
+				tickOffset="10" 
+				dataTipOffset="2"
+				minimum="1" 
+				maximum="30" 
+				value="{this._strokeWeight}" 
+				change="onStrokeWidthChange(event);" />
+		
+	</mx:Canvas>
+
+<!--							
+	<mx:Button id="maxStrokeButton"
+		width="30" height="30" toolTip="Stroke Width: 30"
+		click="{strokeWeightSlider.value = strokeWeightSlider.maximum; createNewStroke();}" />
+		-->
+	<mx:Label text="Line Cap:" />
+	<stroke:LineCapButtonBar id="lineCaps" 
+		selectedLineCap="round" 
+		selectedColor="{this._strokeColor}" 
+		direction="horizontal" 
+		horizontalAlign="center" 
+		paddingTop="20" 
+		lineCapChange="onStrokeLineChange(event);" />					
+	
+	<mx:Label text="Line Join:   " />
+	<stroke:LineJoinButtonBar id="lineJoins" 
+		selectedLineJoin="miter" 
+		lineCap="{this.lineCaps.selectedLineCap}" 
+		selectedColor="{this._strokeColor}" 
+		direction="horizontal" 
+		paddingTop="0" 
+		lineJoinChange="onStrokeLineChange(event);" />					
+		
+</mx:HBox>

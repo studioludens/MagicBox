@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="404" 
+		 xmlns:labeltextinput="com.ludens.PackageHandler.view.labeltextinput.*"
+		 keyDown="group1_keyDownHandler(event)"
+		 click="group1_clickHandler(event)"
+		 >
+	
+	
+	
+	<fx:Metadata>
+		[Event(name="change", type="flash.events.Event")]
+	</fx:Metadata>
+		
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:XML id="designData">
+			<info>
+				<title>{title}</title>
+				<id></id>
+				<author></author>
+				<website></website>
+				<tutorial></tutorial>
+				<description></description>
+				<generator>{generator}</generator>
+			</info>
+		</fx:XML>
+		<fx:String id="title"></fx:String>
+		<fx:String id="generator"></fx:String>
+	</fx:Declarations>
+	
+
+	
+	<!-- background -->
+	<s:Rect width="100%" height="100%">
+		<s:fill>
+			<s:SolidColor color="0x222222"/>
+		</s:fill>
+		<s:stroke>
+			<s:SolidColorStroke color="0x555555"/>
+		</s:stroke>
+	</s:Rect>
+	
+	
+	<s:Label x="61" y="31" click="{author.setFocus()}" fontSize="19" text="Author" textAlign="right"/>
+	<labeltextinput:LabelTextInput id="author" 
+								   text="{designData.author}"
+								   y="27" fontSize="16" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3" 
+								   right="30" left="145" toolTip="who made this design?"
+								   changeValue="{designData.author = author.text}"/>
+	
+	
+	<s:Label x="53" y="72" click="{website.setFocus()}" fontSize="19" text="Website"
+			 textAlign="right"/>
+	
+	
+	<s:Label x="25" y="154" click="{description.setFocus()}" fontSize="19" text="Description"
+			 textAlign="right"/>
+	
+	
+	<s:Label text="ID" fontSize="15" textAlign="right" y="364" right="327"/>
+	
+	
+	
+	<s:Label 
+		x="23" y="186" width="92" fontStyle="italic" height="110" textAlign="right" text="workings, building instructions, additional info" color="#878787" fontSize="12"/>
+	<s:Label x="56" y="111" click="{tutorial.setFocus()}" fontSize="19" text="Tutorial"
+			 textAlign="right"/>
+	
+
+	
+	<labeltextinput:LabelTextInput id="website" 
+		text="{designData.website}"
+		y="68" fontSize="16" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3" 
+		right="30" left="145" toolTip="website with more info on this design"
+		changeValue="{designData.website = website.text}"/>
+	
+	
+	<labeltextinput:LabelTextInput id="tutorial"
+		text="{designData.tutorial}"
+		y="107" fontSize="16" 
+		paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3" 
+		changeValue="{designData.tutorial = tutorial.text}"
+		right="30" left="145" toolTip="a link to a tutorial on how to make this design"/>
+	
+	<labeltextinput:LabelTextArea id="description" 
+		text="{designData.description}"
+		y="154" right="30" left="145" 
+		change="{designData.description = description.text}"
+		height="188" />
+	
+	
+	
+	<labeltextinput:LabelTextInput 
+		y="358" fontSize="16" 
+		paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3" 
+		id="designId" 
+		right="30" left="145" 
+		toolTip="the unique identifier of this design"/>
+	
+	<fx:Script>
+		<![CDATA[
+			
+			
+			
+			private function doChange():void{
+				// fire a change event
+				var evt:Event = new Event(Event.CHANGE);
+				dispatchEvent(evt);	
+			}
+			
+			protected function group1_keyDownHandler(event:KeyboardEvent):void
+			{
+				// TODO Auto-generated method stub
+				if( event.keyCode == 27 ) {
+					// ESC key
+					// hide
+					this.visible = false;
+				}
+			}
+			
+			protected function group1_clickHandler(event:MouseEvent):void
+			{
+				// make sure the click event never arrives at the stage
+				event.stopPropagation();
+				
+			}
+			
+		]]>
+	</fx:Script>
+</s:Group>

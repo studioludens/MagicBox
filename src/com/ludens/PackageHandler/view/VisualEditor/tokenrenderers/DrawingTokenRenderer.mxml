@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tokenrenderers:BasicTokenRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+								   xmlns:s="library://ns.adobe.com/flex/spark"
+								   xmlns:mx="library://ns.adobe.com/flex/mx"
+								   xmlns:tokenrenderers="com.ludens.PackageHandler.view.VisualEditor.tokenrenderers.*"
+								   height="34">
+	<tokenrenderers:layout>
+		<s:HorizontalLayout/>
+	</tokenrenderers:layout>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.ludens.magicbox.parser.tokens.DrawingToken;
+			[Bindable] public var drawingToken:DrawingToken;
+		]]>
+	</fx:Script>
+	<s:DropDownList x="10" y="3">
+	<s:dataProvider>
+		<s:ArrayList>
+			<fx:String>move</fx:String>
+			<fx:String>line</fx:String>
+			<fx:String>horizontal</fx:String>
+			<fx:String>vertical</fx:String>
+			<fx:String>cubic</fx:String>
+			<fx:String>quadratic</fx:String>
+			<fx:String>arc</fx:String>
+			<fx:String>close</fx:String>
+		</s:ArrayList>
+	</s:dataProvider>
+	</s:DropDownList>
+	<s:TextInput width="76" text="{drawingToken.instruction}"/>
+	<s:TextInput width="76"/>
+	
+</tokenrenderers:BasicTokenRenderer>

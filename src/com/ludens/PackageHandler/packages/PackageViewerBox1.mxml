@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageViewer xmlns="com.ludens.PackageHandler.packages.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:flash.filters="flash.filters.*" 
+                xmlns:degrafa1="com.degrafa.*"
+                xmlns:decorators="decorators.*" 
+                xmlns:paint="com.degrafa.paint.*"
+                xmlns:degrafa="http://www.degrafa.com/2007">
+	<!--
+		PACKAGE NAME
+		
+	-->
+	<mx:String id="packageName">Two-flaps with rounded corners</mx:String>
+	
+	<!--
+		DESCRIPTOR XML
+		
+		all values are in mm
+	-->
+	<mx:XML id="packageVariables" xmlns="">
+		<variables>
+			<variable 
+				name="box_width" 
+				title="Width" 
+				min="20" max="700" 
+				value="220"
+				display="text"
+			/>
+			<variable 
+				name="box_height" 
+				title="Height" 
+				min="20" max="700" 
+				value="113"
+				display="text"
+			/>
+			<variable 
+				name="box_depth" 
+				title="Depth" 
+				min="10" max="400" 
+				value="50"
+				display="text"
+			/>
+			
+			<variable 
+				name="flapRoundRadius" 
+				title="Radius" 
+				display="slider"
+				min="0" max="1" 
+				value=".5"
+			/>
+			<variable 
+				name="helperFlapTaper" 
+				title="Taper" 
+				display="slider"
+				min="0" max="1" 
+				value=".8"
+			/>
+			<variable 
+				name="baseFlapHeight" 
+				title="Flap" 
+				display="slider"
+				min="0" max="100" 
+				value="25"
+			/>
+			<variable 
+				name="thickness" 
+				title="Thickness" 
+				display="slider"
+				min="0" max="5" 
+				value="3"
+			/>
+		</variables>
+	</mx:XML>
+	
+	<!--
+		DEFAULT DIMENSIONS
+		
+	-->
+	<mx:Number id="box_width">220</mx:Number>
+    <mx:Number id="box_height">113</mx:Number>
+    <mx:Number id="box_depth">50</mx:Number>
+    
+    <!--
+		CALCULATED DIMENSIONS
+	-->
+    <mx:Number id="totalWidth">{box_height * 2 + box_depth * 2 + baseFlapHeight * 2 + flapRoundRadius * 2}</mx:Number>
+    <mx:Number id="totalHeight">{box_height * 2 + box_depth * 2 + baseFlapHeight}</mx:Number>
+    
+    <mx:Number id="baseX">
+    	{box_depth + flapRoundRadiusAbs + thickness}
+    </mx:Number>
+    <mx:Number id="baseY">
+    	{baseFlapHeight}
+    </mx:Number>
+    
+    <!--
+		DEFAULT PARAMETERS
+	-->
+    <mx:Number id="flapRoundRadius">.5</mx:Number>
+    <mx:Number id="flapRoundRadiusAbs">{box_height * flapRoundRadius * .5}</mx:Number>
+    
+    <mx:Number id="helperFlapTaper">.3</mx:Number>
+    <mx:Number id="helperFlapTaperAbs">{helperFlapTaper * box_depth}</mx:Number>
+    
+    <mx:Number id="baseFlapHeight">25</mx:Number>
+    <mx:Number id="thickness">3</mx:Number>
+    
+    <!--
+		OUTLINE DESCRIPTION
+	-->
+    <mx:String id="rightFlaps">
+    	h {box_depth}
+		q {flapRoundRadiusAbs},0 {flapRoundRadiusAbs},{flapRoundRadiusAbs}
+		v {box_height - flapRoundRadiusAbs * 2}
+		q 0,{flapRoundRadiusAbs} -{flapRoundRadiusAbs},{flapRoundRadiusAbs}
+		
+		
+		v {box_depth - helperFlapTaperAbs}
+		l -{box_depth - thickness},{helperFlapTaperAbs - thickness}
+		l -{thickness}, {thickness}
+		v {box_height}
+		l {thickness},{thickness}
+		l {box_depth - thickness}, {helperFlapTaperAbs-thickness}
+		v {box_depth - helperFlapTaperAbs}
+		
+		h -{box_depth}
+    </mx:String>
+    
+    <mx:String id="leftFlaps">
+    	h -{thickness*2}
+		l -{thickness},-{thickness*2}
+		l -{box_depth - thickness * 6}, -{helperFlapTaperAbs}
+		v {-(box_depth - helperFlapTaperAbs - thickness * 2)}
+		
+		
+		h -{thickness * 2}
+		l -{thickness }, -{thickness }
+		
+		q -{flapRoundRadiusAbs},0 -{flapRoundRadiusAbs}, -{flapRoundRadiusAbs}
+		v {-(box_height - flapRoundRadiusAbs * 2 - thickness * 2)}
+		q 0,-{flapRoundRadiusAbs} {flapRoundRadiusAbs}, -{flapRoundRadiusAbs}
+		
+		l {thickness}, -{thickness}
+		h {thickness * 2}
+		
+		v {-(box_depth - helperFlapTaperAbs - thickness * 2)}
+		
+		l {box_depth - thickness * 6}, -{helperFlapTaperAbs}
+		l {thickness }, -{thickness * 2}
+		h {thickness * 2}
+		v -{box_height}
+    </mx:String>
+    
+    <!--
+		DRAWING SURFACE
+	-->
+	<degrafa:Surface id="surface">
+        <degrafa:strokes>
+            <degrafa:SolidStroke     id="whiteStroke"
+                                    color="#FFF"
+                                    weight="1"
+                                    alpha=".1"/>
+            
+            <degrafa:SolidStroke     id="drawingStroke"
+                                    color="#FFF"
+                                    weight="1"
+                                    alpha="1"/>
+            
+            <degrafa:SolidStroke     id="testStroke"
+                                    color="#FF0000"
+                                    weight="1"
+                                    alpha="1"/>
+        </degrafa:strokes>
+    
+    	<degrafa:GeometryGroup id="outlineDrawing">
+    
+    		<degrafa:GeometryGroup x="{baseX}" y="{baseY}">
+    	
+		    	<degrafa:fills>
+					
+					<paint:SolidFill
+									id="solidFill"
+									color="0xCCCCCC"
+									alpha=".25"
+									/>
+					
+				</degrafa:fills>
+				
+				<!-- MAIN OUTLINE -->
+				
+				<degrafa:GeometryGroup fill="{solidFill}">
+					<!-- main outline -->
+					
+					<degrafa:Path data="
+							M 0,0
+							l 3.5,-{baseFlapHeight}
+							h {box_width - 7} 
+							l 3.5, {baseFlapHeight}
+							{rightFlaps}
+							h -{box_width}
+							{leftFlaps}
+							" 
+						stroke="{drawingStroke}"/>
+		
+				</degrafa:GeometryGroup>
+				
+		    	<degrafa:GeometryGroup>
+		    		
+		    	<!-- left and right flap cut lines -->
+				
+					<!-- right part cut lines -->
+					<degrafa:Path data="
+							M {box_width}, {box_height}
+							h {box_depth}" stroke="{drawingStroke}"/>
+							
+					<!-- left part cut lines -->
+					<degrafa:Path data="
+							M 0, { box_height + box_depth}
+							h -{box_depth - 3* thickness}" 
+						stroke="{drawingStroke}"/>
+					
+					<degrafa:Path data="
+							M 0, {  box_height * 2 + box_depth}
+							h -{box_depth - 3* thickness}" 
+						stroke="{drawingStroke}"/>
+					
+					<degrafa:Path data="
+							M { - box_depth}, { box_height + box_depth + thickness }
+							v {box_height / 8}
+							h {thickness * 2}" 
+						stroke="{drawingStroke}"/>
+						
+					<degrafa:Path data="
+							M { - box_depth}, { box_height * 2 + box_depth - thickness }
+							v -{box_height / 8}
+							h {thickness * 2}" 
+						stroke="{drawingStroke}"/>
+						
+			    	<!-- score lines -->
+			    	<degrafa:Path data="M 0,0  {_h(box_width) } 
+			    						 { _v(box_height + box_depth)} 
+			    						m 0, {box_height} 
+			    						 {_v(box_depth)} 
+			    						m -{box_width},0 
+			    						m 0,-{box_depth * 2 + box_height }
+			    						 {_h(box_width)}
+			    						m -{box_width}, {box_depth}
+			    						 {_h(box_width)}
+			    						m -{box_width}, {box_height}
+			    						 {_h(box_width)}
+			    						m -{box_width}, -{box_height + box_depth }
+			    						 {_v(box_depth * 2 + box_height)}" 
+			    					stroke="{drawingStroke}">
+			    		
+			    	</degrafa:Path>
+					
+					<!-- score line for right flap -->
+					
+					<degrafa:Path data="
+							M {box_width + box_depth}, 0
+							 {_v(box_height)}" 
+						stroke="{drawingStroke}">
+						
+					</degrafa:Path>
+					
+					<!-- score line for left flap -->
+					
+					<degrafa:Path data="
+							M { - box_depth + thickness}, {box_height * (9/8) + box_depth + thickness * 2}
+							 { _v(box_height*(6/8) - thickness * 4)}" 
+						stroke="{drawingStroke}">
+						
+					</degrafa:Path>
+					
+		    	</degrafa:GeometryGroup>
+					
+		    </degrafa:GeometryGroup>
+    	</degrafa:GeometryGroup>
+    </degrafa:Surface>
+</PackageViewer>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" width="632" height="396">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<fx:XML source="assets/xml/defaultFunctions.xml" id="defaultFunctions"/>
+		<s:XMLListCollection source="{defaultFunctions.mblFunction}" id="defaultFunctionsList"/>
+	</fx:Declarations>
+	
+	
+	<s:Label x="10" y="10" text="Function Reference" fontSize="17"/>
+	<mx:DataGrid left="10" right="10" top="35" bottom="10" dataProvider="{defaultFunctionsList}">
+		<mx:columns>
+			<mx:DataGridColumn 
+				headerText="Name" dataField="@name" width="100" 
+				fontFamily="Andale Mono, Courier New"
+				 fontWeight="bold"/>
+			<mx:DataGridColumn 
+				headerText="Arguments"
+				dataField="arguments" 
+				width="350" 
+				fontFamily="Andale Mono, Courier New"
+				itemRenderer="com.ludens.PackageHandler.view.itemrenderers.FunctionArgumentsHelpRenderer"/>
+			<mx:DataGridColumn 
+				headerText="Description" 
+				dataField="@description"/>
+			<mx:DataGridColumn 
+				headerText="Type" 
+				dataField="@type" 
+				resizable="false" width="50"/>
+		</mx:columns>
+	</mx:DataGrid>
+</mx:Canvas>
